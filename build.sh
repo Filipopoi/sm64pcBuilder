@@ -37,6 +37,7 @@ else
     sleep 2
     ./build.sh
 fi
+printf "\n"
 
 #Update message
 cat<<EOF
