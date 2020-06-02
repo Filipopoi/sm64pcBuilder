@@ -28,9 +28,14 @@ RESET=$(tput sgr0)
 
 #Update check
 if git diff-index --quiet HEAD --; then
-    printf "no changes"
+    printf "No build.sh Updates Available"
 else
-    printf "changes"
+    git stash push
+    git stash drop
+    git pull https://github.com/gunvalk/sm64pcBuilder
+    printf "Updated & Restarting"
+    sleep 2
+    ./build.sh
 fi
 
 #Update message
@@ -40,7 +45,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    Meats back on the menu boys                                  
+    bronys 2020                                  
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
