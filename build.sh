@@ -27,15 +27,17 @@ CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
 #Update check
-if git diff-index --quiet HEAD --; then
-    printf "No build.sh Updates Available"
+printf "\n${GREEN}Would you like to check for build.sh updates? ${CYAN}(y/n) ${RESET}\n"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+	git stash push
+	git stash drop
+	git pull https://github.com/gunvalk/sm64pcBuilder
+	printf "Updated & Restarting"
+	sleep 2
+	./build.sh
 else
-    git stash push
-    git stash drop
-    git pull https://github.com/gunvalk/sm64pcBuilder
-    printf "Updated & Restarting"
-    sleep 2
-    ./build.sh
+	continue
 fi
 printf "\n"
 
@@ -71,7 +73,7 @@ fi
 printf "\n${GREEN}Would you like to download the latest source files from Github? ${CYAN}(y/n) ${RESET}\n"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-	printf "\n${GREEN}THE MASTER HAS NOT BEEN UPDATED IN A WHILE\nDOWNLOAD THE NIGHTLY! (newest experimental version)? ${CYAN}(master/nightly) ${RESET}\n"
+	printf "\n${GREEN}THE MASTER HAS NOT BEEN UPDATED IN A WHILE\nDOWNLOAD THE NIGHTLY!${CYAN}(master/nightly) ${RESET}\n"
     read answer
 	if [ "$answer" != "${answer#[Mm]}" ] ;then
 		# Checks for existence of previous .git folder, then creates one if it doesn't exist and moves the old folder
