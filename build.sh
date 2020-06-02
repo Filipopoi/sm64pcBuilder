@@ -41,7 +41,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    I dont feel so good mr stark                                    
+    Thanos did nothing wrong.                                   
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
