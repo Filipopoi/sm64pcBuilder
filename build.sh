@@ -33,7 +33,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
-	printf "\n${GREEN}Restarting - Answer ${RESET}${RED}no ${RESET}${GREEN}when asked about updating this time.${RESET}\n"
+	printf "\n${GREEN}RESTARTING - ANSWER ${RESET}${RED}NO ${RESET}${GREEN}WHEN ASKED ABOUT UPDATES THIS TIME.${RESET}\n"
 	sleep 2
 	./build.sh
 fi
@@ -46,7 +46,15 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    I dont feel so good mr stark.                                  
+    You will no longer need to update your build.sh file manually.                    
+    There will now be a sm64pcBuilder folder on your C drive. 
+    This is the folder where your build.sh files will generate,
+    as well as your sm64pc-master or sm64pc-nightly folders.
+    You can delete any build.sh file that is outside of
+    the sm64pcBuilder. Your old sm64pc-master or sm64pc-nightly 
+    folders are in the same location as they were. Either move
+    them to the sm64pcBuilder folder, or select yes to updating
+    when the green message appears to generate new folders.                                
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
