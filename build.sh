@@ -27,13 +27,13 @@ CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
 #Update check
-if git cat-file -e $sha^{commit}; then
+if [ "$(git merge-base $commit $branch)" = "$commit" ]; then
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
 	./build.sh
 else
-  printf "No Updates Available"
+    printf "\nNo build.sh Updates Available\n"
 fi
 
 #Update message
@@ -43,7 +43,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    I dont feel so good mr stark                                  
+    Meats back on the menu boys                                  
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
