@@ -27,7 +27,7 @@ CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
 #Update check
-if [[ `git status --porcelain` ]]; then
+if ! git diff-index --quiet HEAD --; then
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
@@ -41,7 +41,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    Thanos did nothing wrong.                                   
+    uno                                   
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
