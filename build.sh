@@ -41,7 +41,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    uno                                   
+    I dont feel so good mr stark                                  
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
