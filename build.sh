@@ -31,9 +31,12 @@ if [ "$(git merge-base $commit $branch)" = "$commit" ]; then
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
-	./build.sh
 else
     printf "\nNo build.sh Updates Available\n"
+fi
+
+if [ "$(git merge-base $commit $branch)" = "$commit" ]; then
+	./build.sh
 fi
 
 #Update message
