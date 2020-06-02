@@ -33,7 +33,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
-	printf "\n${GREEN}Restarting - Answer ${RESET}${RED}no when asked about updating this time.${RESET}\n"
+	printf "\n${GREEN}Restarting - Answer ${RESET}${RED}no ${RESET}${GREEN}when asked about updating this time.${RESET}\n"
 	sleep 2
 	./build.sh
 fi
