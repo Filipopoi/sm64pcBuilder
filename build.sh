@@ -30,6 +30,7 @@ RESET=$(tput sgr0)
 git stash push
 git stash drop
 git pull https://github.com/gunvalk/sm64pcBuilder
+./build.sh
 
 #Update message
 cat<<EOF
@@ -38,15 +39,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    You will no longer need to update your build.sh file manually.                    
-    There will now be a sm64pcBuilder folder on your C drive. 
-    This is the folder where your build.sh files will generate,
-    as well as your sm64pc-master or sm64pc-nightly folders.
-    You can delete any build.sh file that is outside of
-    the sm64pcBuilder. Your old sm64pc-master or sm64pc-nightly 
-    folders are in the same location as they were. Either move
-    them to the sm64pcBuilder folder, or select yes to updating
-    when the green message appears to generate new folders.
+    Updates go here                    
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
