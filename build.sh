@@ -439,16 +439,10 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
 
 	if ls $BINARY 1> /dev/null 2>&1; then
 		mv ./ReShade_Setup_4.6.1.exe ./build/us_pc/ReShade_Setup_4.6.1.exe
-    	printf "\n${GREEN}The sm64pc binary is now available in the 'build/us_pc/' folder.\n"
+    		printf "\n${GREEN}The sm64pc binary is now available in the 'build/us_pc/' folder.\n"
 		printf "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
-		# allow the user to run the game from here in the script if they wish
-		printf "\n${CYAN}Would you like to run the game? [y or n]: ${RESET}"
-		read answer
-		if [ "$answer" != "${answer#[Yy]}" ]; then
-    		exec $BINARY
-       	fi
 	else
-    	printf "\n${RED}Oh no! Something went wrong."
+    		printf "\n${RED}Oh no! Something went wrong."
 	fi
 	
 else
