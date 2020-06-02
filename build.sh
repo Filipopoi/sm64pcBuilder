@@ -46,7 +46,7 @@ cat<<EOF
     ${YELLOW}------------------------------${RESET}
     ${CYAN}Updates:
 
-    bronys 2020                                  
+    I dont feel so good mr stark.                                  
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
