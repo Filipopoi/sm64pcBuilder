@@ -27,16 +27,10 @@ CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
 #Update check
-if [ "$(git merge-base $commit $branch)" = "$commit" ]; then
-	git stash push
-	git stash drop
-	git pull https://github.com/gunvalk/sm64pcBuilder
+if git diff-index --quiet HEAD --; then
+    printf "no changes"
 else
-    printf "\nNo build.sh Updates Available\n"
-fi
-
-if [ "$(git merge-base $commit $branch)" = "$commit" ]; then
-	./build.sh
+    printf "changes"
 fi
 
 #Update message
