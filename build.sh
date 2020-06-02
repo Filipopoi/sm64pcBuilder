@@ -27,11 +27,13 @@ CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
 #Update check
-if ! git diff-index --quiet HEAD --; then
+if git cat-file -e $sha^{commit}; then
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
 	./build.sh
+else
+  printf "No Updates Available"
 fi
 
 #Update message
