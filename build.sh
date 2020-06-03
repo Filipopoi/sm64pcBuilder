@@ -363,7 +363,6 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
 	else
     	printf "\n${RED}Oh no! Something went wrong."
 	break 2> /dev/null
-	return
 	fi
 	
 else
@@ -377,5 +376,4 @@ else
 		fi
 	fi
 	printf "\nYour build is now clean.\n"
-	return
 fi 
