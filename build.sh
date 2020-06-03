@@ -203,8 +203,8 @@ else
 			printf "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
 				PATH=/mingw32/bin:/mingw64/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
 
-    		printf "\n${YELLOW} Executing: ${CYAN}make${RESET}\n\n"
-				PATH=/mingw32/bin:/mingw64/bin:$PATH make
+    		printf "\n${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
+				PATH=/mingw32/bin:/mingw64/bin:$PATH make $1
 		fi
 	fi
     printf "\n${YELLOW} Making new directory ${CYAN}../lib${RESET}\n\n"
@@ -228,8 +228,8 @@ else
 			PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
 	else
 		if [ `getconf LONG_BIT` = "32" ]; then
-			printf "${YELLOW} Executing: ${CYAN}make${RESET}\n\n"
-				PATH=/mingw32/bin:/mingw64/bin:$PATH make
+			printf "${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
+				PATH=/mingw32/bin:/mingw64/bin:$PATH make $1
 		fi
 	fi
     printf "\n${YELLOW} Going up one directory.${RESET}\n"
@@ -374,7 +374,7 @@ else
 		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
 	else
 		if [ `getconf LONG_BIT` = "32" ]; then
-		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL}${RESET}\n\n"
+		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1${RESET}\n\n"
 		PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL $1
 		fi
 	fi
