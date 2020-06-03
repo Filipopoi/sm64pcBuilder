@@ -72,7 +72,7 @@ cat<<EOF
     This is the folder where your build.sh files will generate,
     as well as your sm64pc-master or sm64pc-nightly folders.
     You can delete any build.sh file that is outside of
-    the sm64pcBuilder. Your old sm64pc-master or sm64pc-nightly 
+    sm64pcBuilder. Your old sm64pc-master or sm64pc-nightly 
     folders are in the same location as they were. Either move
     them to the sm64pcBuilder folder, or select yes to updating
     when the green message appears to generate new folders.                                
@@ -86,7 +86,7 @@ EOF
 	read -n 1 -r -s -p $'\nPRESS ENTER TO CONTINUE...\n'
 
 # Gives options to download from the Github
-printf "\n${GREEN}Would you like to download the latest source files from Github? ${CYAN}(y/n) ${RESET}\n"
+printf "\n${GREEN}Would you like to download or update the latest source files from Github? ${CYAN}(y/n) ${RESET}\n"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
 	printf "\n${GREEN}THE MASTER HAS NOT BEEN UPDATED IN A WHILE DOWNLOAD THE NIGHTLY!${CYAN}(master/nightly) ${RESET}\n"
