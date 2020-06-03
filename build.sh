@@ -359,10 +359,11 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
     	printf "\n${GREEN}The sm64pc binary is now available in the 'build/us_pc/' folder.\n"
 		printf "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
 		break 2> /dev/null
-		return
+		return 2> /dev/null
 	else
     	printf "\n${RED}Oh no! Something went wrong."
 	break 2> /dev/null
+	return 2> /dev/null
 	fi
 	
 else
@@ -376,4 +377,5 @@ else
 		fi
 	fi
 	printf "\nYour build is now clean.\n"
+	return 2> /dev/null
 fi 
