@@ -164,7 +164,7 @@ if [ "$I_Want_Master" = true ]; then
     if [ -f "$ROM_CHECK" ]; then
     	printf "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	printf "\n${YELLOW}Place your baserom.us.z64 file in the ${MASTER} folder${RESET}\n"
+    	printf "\n${YELLOW}Place your baserom.us.z64 file in the ${MASTER} folder located\nin c:/sm64pcBuilder${RESET}\n"
 		read -n 1 -r -s -p $'\nPRESS ENTER TO CONTINUE...\n'
 	fi
 fi
@@ -174,7 +174,7 @@ if [ "$I_Want_Nightly" = true ]; then
     if [ -f "$ROM_CHECK" ]; then
     	printf "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	printf "\n${YELLOW}Place your baserom.us.z64 file in the ${NIGHTLY} folder${RESET}\n"
+    	printf "\n${YELLOW}Place your baserom.us.z64 file in the ${NIGHTLY} folder located\nin c:/sm64pcBuilder${RESET}\n"
 		read -n 1 -r -s -p $'\nPRESS ENTER TO CONTINUE...\n'
 	fi
 fi
@@ -236,7 +236,6 @@ else
 		cd ../
 fi 
 
-read -n 1 -r -s -p $'\n\nPRESS ENTER TO CONTINUE...\n'
 #Patch menu
 while :
 do
