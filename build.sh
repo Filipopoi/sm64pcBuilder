@@ -196,8 +196,8 @@ else
     	printf "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
 			PATH=/mingw64/bin:/mingw32/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
 
-    	printf "\n${YELLOW} Executing: ${CYAN}make -j${RESET}\n\n"
-			PATH=/mingw64/bin:/mingw32/bin:$PATH make -j
+    	printf "\n${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
+			PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
 	else
 		if [ `getconf LONG_BIT` = "32" ]; then
 			printf "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
@@ -224,8 +224,8 @@ else
 
 	#Checks the computer architecture
     if [ `getconf LONG_BIT` = "64" ]; then
-    	printf "${YELLOW} Executing: ${CYAN}make -j${RESET}\n\n"
-			PATH=/mingw64/bin:/mingw32/bin:$PATH make -j
+    	printf "${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
+			PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
 	else
 		if [ `getconf LONG_BIT` = "32" ]; then
 			printf "${YELLOW} Executing: ${CYAN}make${RESET}\n\n"
@@ -331,11 +331,11 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
 	#printf "${GREEN}Would you like to cross-compile a 32-bit binary? ${CYAN}(y/n) ${RESET}\n"
 	#read answer
 	#if [ "$answer" != "${answer#[Yy]}" ]; then
-		#printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32 -j${RESET}\n\n"
-		#PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=32 -j
+		#printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32 $1${RESET}\n\n"
+		#PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=32 $1
 	#else
-		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} -j${RESET}\n\n"
-		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL -j
+		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1${RESET}\n\n"
+		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
 	#fi
 
 	if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "32" ]; then
@@ -347,8 +347,8 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
 			#printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=64${RESET}\n\n"
 			#PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=64
 		#else
-			printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32${RESET}\n\n"
-			PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=32
+			printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1 TARGET_BITS=32${RESET}\n\n"
+			PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL $1 TARGET_BITS=32
 		#fi
 	fi
 
@@ -368,12 +368,12 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
 	
 else
 	if [ `getconf LONG_BIT` = "64" ]; then
-		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} -j${RESET}\n\n"
-		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL -j
+		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1${RESET}\n\n"
+		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
 	else
 		if [ `getconf LONG_BIT` = "32" ]; then
 		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL}${RESET}\n\n"
-		PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL
+		PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL $1
 		fi
 	fi
 	printf "\nYour build is now clean.\n"
