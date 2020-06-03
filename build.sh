@@ -16,7 +16,7 @@ BINARY=./build/us_pc/sm64*
 FOLDER_PLACEMENT=C:/sm64pcBuilder
 
 # Command line options
-OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources | Nightly Only" "Remove Extended Options Menu | Remove additional R button menu options" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Build for the web | Requires emsdk to be installed" "Build for a Raspberry Pi" "Clean build")
+OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources | Nightly Only" "Remove Extended Options Menu | Remove additional R button menu options" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Build for the web | Requires emsdk to be installed" "Build for a Raspberry Pi" "Clean build | This deletes the build folder")
 EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "EXT_OPTIONS_MENU=0" "LEGACY_GL=1" "TARGET_WEB=1" "TARGET_RPI=1" "clean")
 
 # Colors
