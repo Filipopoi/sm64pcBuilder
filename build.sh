@@ -65,17 +65,17 @@ cat<<EOF
     ${YELLOW}==============================${RESET}
     ${CYAN}SM64PC Builder${RESET}
     ${YELLOW}------------------------------${RESET}
-    ${CYAN}Updates:
+    ${RED}READ THIS MESSAGE:${RESET}
 
-    You will no longer need to update your build.sh file manually.                    
+    ${CYAN}You will no longer need to update your build.sh file manually.                    
     There will now be a sm64pcBuilder folder on your C drive. 
     This is the folder where your build.sh files will generate,
     as well as your sm64pc-master or sm64pc-nightly folders.
-    You can delete any build.sh file that is outside of
-    sm64pcBuilder. Your old sm64pc-master or sm64pc-nightly 
-    folders are in the same location as they were. Either move
-    them to the sm64pcBuilder folder, or select yes to updating
-    when the green message appears to generate new folders.                                
+    Delete any build.sh file that is outside of sm64pcBuilder.
+    Your old sm64pc-master or sm64pc-nightly folders are
+    in the same location as they were (if you had them).
+    When recompiling run cd c:/sm64pcBuilder then
+    ./build.sh                               
 
     ${RESET}${YELLOW}------------------------------${RESET}
     ${CYAN}build.sh Update 15${RESET}
