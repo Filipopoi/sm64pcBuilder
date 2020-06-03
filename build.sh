@@ -347,7 +347,7 @@ if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
 			#printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=64${RESET}\n\n"
 			#PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=64
 		#else
-			printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32${RESET} $1\n\n"
+			printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32 $1${RESET}\n\n"
 			PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=32 $1
 		#fi
 	fi
