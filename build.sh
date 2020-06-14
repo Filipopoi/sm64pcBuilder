@@ -230,7 +230,7 @@ if [ "$I_Want_Master" = true ]; then
     else
     	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
     	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
-    	cp $BASEROM_FILE c:/sm64pcBuilder/sm64pc-master/baserom.us.z64
+    	cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64pc-master/baserom.us.z64
 	fi
 fi
 
@@ -241,7 +241,7 @@ if [ "$I_Want_Nightly" = true ]; then
     else
     	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
     	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
-    	cp $BASEROM_FILE c:/sm64pcBuilder/sm64pc-nightly/baserom.us.z64
+    	cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64pc-nightly/baserom.us.z64
 	fi
 fi
 
@@ -812,7 +812,8 @@ if [ "${CMDL}" != " clean" ]; then
 		cd ./build/us_pc/
 		start .
 	else
-    	echo -e "\n${RED}Oh no! Something went wrong."
+    	zenity --warning \
+        --text="Oh no! Something went wrong."
 	fi
 
 else
