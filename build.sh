@@ -14,10 +14,16 @@ ROM_CHECK=./baserom.us.z64
 NIGHTLY_OLD=./sm64pc-nightly.old/baserom.us.z64
 BINARY=./build/us_pc/sm64*
 FOLDER_PLACEMENT=C:/sm64pcBuilder
+MACHINE_TYPE=`uname -m`
 
 # Command line options
-OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources | Nightly Only" "Remove Extended Options Menu | Remove additional R button menu options" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Build for the web | Requires emsdk to be installed" "Build for a Raspberry Pi" "Clean build | This deletes the build folder")
-EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "EXT_OPTIONS_MENU=0" "LEGACY_GL=1" "TARGET_WEB=1" "TARGET_RPI=1" "clean")
+MASTER_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Remove Extended Options Menu | Remove additional R button menu options" "Clean build | This deletes the build folder")
+MASTER_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXT_OPTIONS_MENU=0" "clean")
+NIGHTLY_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
+NIGHTLY_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "VERSION=jp" "VERSION=eu" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
+
+# Extra dependency checks
+DEPENDENCIES=("make" "git" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2")
 
 # Colors
 RED=$(tput setaf 1)
@@ -26,358 +32,798 @@ YELLOW=$(tput setaf 3)
 CYAN=$(tput setaf 6)
 RESET=$(tput sgr0)
 
-#Installs the msys dependency bullshit if it's not installed yet
+if [ PWD != "/c/sm64pcBuilder" ]; then
+	cd c:/sm64pcBuilder
+fi
+
+# Antivirus fuck you message
+if [ -d "C:/Program Files/Avast Software/" ] || [ -d "C:/Program Files (x86)/Avast Software/" ]; then
+	echo -e "\n${RED}Avast Detected${RESET}\n\n${YELLOW}Uninstall Avast. It's garbage and will fuck up your install.\nAt the very least make sure it's disabled.${RESET}\n"
+	sleep 3
+fi
+
+if [ -d "C:/Program Files/AVG/" ] || [ -d "C:/Program Files (x86)/AVG/" ]; then
+	echo -e "\n${RED}AVG Detected${RESET}\n\n${YELLOW}Uninstall AVG. It's garbage and will fuck up your install.\nAt the very least make sure it's disabled.${RESET}\n"
+	sleep 3
+fi
+
+if [ -d "C:/Program Files/Norton Security/" ] || [ -d "C:/Program Files (x86)/Norton Security/" ]; then
+	echo -e "\n${RED}Norton Security Detected${RESET}\n\n${YELLOW}Uninstall Norton Security. It's garbage and will fuck up your install.\nAt the very least make sure it's disabled.${RESET}\n"
+	sleep 3
+fi
+
+if [ -d "C:/Program Files/McAfee/" ] || [ -d "C:/Program Files (x86)/McAfee/" ]; then
+	echo -e "\n${RED}McAfee Detected${RESET}\n\n${YELLOW}Uninstall McAfee. It's garbage and will fuck up your install.\nAt the very least make sure it's disabled.${RESET}\n"
+	sleep 3
+fi
+
+if [ -d "C:/Program Files/Kaspersky Lab/" ] || [ -d "C:/Program Files (x86)/Kaspersky Lab/" ]; then
+	echo -e "\n${RED}Kaspersky Detected${RESET}\n\n${YELLOW}Uninstall Kaspersky. It's garbage and will fuck up your install.\nAt the very least make sure it's disabled.${RESET}\n"
+	sleep 3
+fi
+
+# Checks for common required executables (make, git) and installs everything if they are missing
 if  [[ ! $(command -v make) || ! $(command -v git) ]]; then
-	printf "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
-	pacman -S --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
+	echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
+	pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
                     git subversion mercurial \
                     mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
-    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 --noconfirm
+    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 zip curl --noconfirm
 	pacman -Syuu --noconfirm
-else
-	printf "\n${GREEN}Dependencies are already installed. ${RESET}\n"
 fi
 
-#Upgrade to updating version
-if [ ! -d "$FOLDER_PLACEMENT" ]; then
-	git clone https://github.com/gunvalk/sm64pcBuilder/
-	mv ./sm64pcBuilder c:/sm64pcBuilder
-	cd c:/sm64pcBuilder
-	printf "\n${GREEN}RESTARTING\n"
-	./build.sh
+# Checks for some dependencies again
+echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
+for i in ${DEPENDENCIES[@]}; do
+	if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
+		pacman -S $i --noconfirm
+	fi
+done
+
+if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
+	wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
 fi
 
-#Update check
-printf "\n${GREEN}Would you like to check for build.sh updates? ${CYAN}(y/n) ${RESET}\n"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
+echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
+
+# Delete their setup or old shit
+if [ -f $HOME/build-setup.sh ]; then
+	rm $HOME/build-setup.sh
+fi
+
+if [ -f $HOME/build.sh ]; then
+	rm $HOME/build.sh
+fi
+
+# Update sm64pcbuilder check
+pull_sm64pcbuilder () {
+	echo -e "\n${YELLOW}Downloading available build.sh updates...${RESET}\n"
 	git stash push
 	git stash drop
 	git pull https://github.com/gunvalk/sm64pcBuilder
-	printf "\n${GREEN}RESTARTING - ANSWER ${RESET}${RED}NO ${RESET}${GREEN}WHEN ASKED ABOUT UPDATES THIS TIME.${RESET}\n"
+	echo -e "\n${GREEN}Restarting...${RESET}\n"
 	sleep 2
-	./build.sh
+	set -- "$1" "$2" "showchangelog"
+	exec ./build.sh "$@" 
+}
+
+[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RESET}" || pull_sm64pcbuilder "$@"
+
+# Update message
+if [ "$3" = showchangelog ]; then
+	zenity --info  --text "
+SM64PC Builder
+------------------------------
+Updates:
+
+-Use noupdate After ./build.sh Or -j
+ To Skip Updating Master Or Nightly
+-New DX11 & DX12 Renderer Options
+-Antivirus Warning
+-New Menu Prompts
+-Custom Patch & Texture Pack
+ Selection
+
+------------------------------
+build.sh Update 19.5"
 fi
-printf "\n"
 
-#Update message
-cat<<EOF
-    ${YELLOW}==============================${RESET}
-    ${CYAN}SM64PC Builder${RESET}
-    ${YELLOW}------------------------------${RESET}
-    ${RED}READ THIS MESSAGE:${RESET}
+# Gives options to download from GitHub
 
-    ${CYAN}You will no longer need to update your build.sh file manually.                    
-    There will now be a sm64pcBuilder folder on your C drive. 
-    This is the folder where your build.sh files will generate,
-    as well as your sm64pc-master or sm64pc-nightly folders.
-    Delete any build.sh file that is outside of sm64pcBuilder.
-    Your old sm64pc-master or sm64pc-nightly folders are
-    in the same location as they were (if you had them).
-    When recompiling run cd c:/sm64pcBuilder then
-    ./build.sh                               
+# Update master check
+pull_master () {
+	echo -e "\n${YELLOW}Downloading available sm64pc-master updates...${RESET}\n"
+	git stash push
+	git stash drop
+	git pull
+	sleep 2
+}
 
-    ${RESET}${YELLOW}------------------------------${RESET}
-    ${CYAN}build.sh Update 15${RESET}
-    ${YELLOW}==============================${RESET}
+# Update nightly check
+pull_nightly () {
+	echo -e "\n${YELLOW}Downloading available sm64pc-nightly updates...${RESET}\n"
+	git stash push
+	git stash drop
+	git pull
+	sleep 2
+}
 
-EOF
-	break 2> /dev/null
-	read -n 1 -r -s -p $'\nPRESS ENTER TO CONTINUE...\n'
-
-# Gives options to download from the Github
-printf "\n${GREEN}Would you like to download or update the latest source files from Github? ${CYAN}(y/n) ${RESET}\n"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-	printf "\n${GREEN}THE MASTER HAS NOT BEEN UPDATED IN A WHILE DOWNLOAD THE NIGHTLY!${CYAN}(master/nightly) ${RESET}\n"
-    read answer
-	if [ "$answer" != "${answer#[Mm]}" ] ;then
-		# Checks for existence of previous .git folder, then creates one if it doesn't exist and moves the old folder
+if [ "$1" = noupdate ] || [ "$2" = noupdate ]; then
+	zenity --question  --text "Which version are you compiling?
+The nightly version is currently recommended.
+Automatic updates are disabled." \
+	--ok-label="Master" \
+	--cancel-label="Nightly"
+	if [[ $? = 0 ]]; then
+	  I_Want_Master=true
+	else
+	  I_Want_Nightly=true
+	fi
+else
+	zenity --question  --text "Which version are you compiling?
+The nightly version is currently recommended.
+Automatic updates are enabled." \
+	--ok-label="Master" \
+	--cancel-label="Nightly"
+	if [[ $? = 0 ]]; then
 		if [ -d "$MASTER_GIT" ]; then
 			cd ./sm64pc-master
-			printf "\n"
-			git stash push
-			git stash drop
-			git pull https://github.com/sm64pc/sm64pc
+			echo -e "\n"
+			[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+			sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-master is up to date\n${RESET}" || pull_master "$@"
+			if [ -f ./build.sh ]; then
+				rm ./build.sh
+			fi
 			I_Want_Master=true
 			cd ../
 		else
 			if [ -d "$MASTER" ]; then
 				mv sm64pc-master sm64pc-master.old
-				printf "\n"
-				git clone git://github.com/sm64pc/sm64pc sm64pc-master
-				I_Want_Master=true
-			else
-				printf "\n"
-				git clone git://github.com/sm64pc/sm64pc sm64pc-master
-				I_Want_Master=true
 			fi
+			echo -e "\n"
+			git clone git://github.com/sm64pc/sm64pc sm64pc-master
+			I_Want_Master=true
 		fi
-	else
-		if [ -d "$NIGHTLY_GIT" ]; then
-			cd ./sm64pc-nightly
-			printf "\n"
-			git stash push
-			git stash drop
-			git pull https://github.com/sm64pc/sm64pc
-			I_Want_Nightly=true
-			cd ../
-		else
-			if [ -d "$NIGHTLY" ]; then
-				printf "\n"
-				mv sm64pc-nightly sm64pc-nightly.old
-				git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
-				I_Want_Nightly=true
-			else
-				printf "\n"
-				git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
-				I_Want_Nightly=true
-			fi
+	elif [ -d "$NIGHTLY_GIT" ]; then
+		cd ./sm64pc-nightly
+		echo -e "\n"
+		[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+		sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-nightly is up to date\n${RESET}" || pull_nightly "$@"
+		if [ -f ./build.sh ]; then
+			rm ./build.sh
 		fi
-	fi
-else
-    printf "\n${GREEN}Are you building master or nightly? (master/nightly) ${RESET}\n"
-	read answer
-	if [ "$answer" != "${answer#[Mm]}" ] ;then
-		I_Want_Master=true
-	else
 		I_Want_Nightly=true
+		cd ../
+		elif [ -d "$NIGHTLY" ]; then
+			echo -e "\n"
+			mv sm64pc-nightly sm64pc-nightly.old
+			git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
+			if [ -f ./sm64pc-nightly/build.sh ]; then
+				rm ./sm64pc-nightly/build.sh
+			fi
+			I_Want_Nightly=true
+		else
+			echo -e "\n"
+			git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
+			if [ -f ./sm64pc-nightly/build.sh ]; then
+				rm ./sm64pc-nightly/build.sh
+			fi
+			I_Want_Nightly=true
 	fi
 fi
 
 # Checks for a pre-existing baserom file in old folder then moves it to the new one
 if [ -f "$MASTER_OLD" ]; then
-	cd ./sm64pc-master.old
-    mv baserom.us.z64 ../sm64pc-master/baserom.us.z64
-	cd ../
+    mv sm64pc-master.old/baserom.us.z64 sm64pc-master/baserom.us.z64
 fi
 
 if [ -f "$NIGHTLY_OLD" ]; then
-	cd ./sm64pc-nightly.old
-    mv baserom.us.z64 ../sm64pc-nightly/baserom.us.z64
-	cd ../
+    mv sm64pc-nightly.old/baserom.us.z64 sm64pc-nightly/baserom.us.z64
 fi
 
 # Checks for which version the user selected & if baserom exists
 if [ "$I_Want_Master" = true ]; then
     cd ./sm64pc-master
     if [ -f "$ROM_CHECK" ]; then
-    	printf "\n\n${GREEN}Existing baserom found${RESET}\n"
+    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	printf "\n${YELLOW}Place your baserom.us.z64 file in the ${MASTER} folder located\nin c:/sm64pcBuilder${RESET}\n"
-		read -n 1 -r -s -p $'\nPRESS ENTER TO CONTINUE...\n'
+    	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
+    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
+    	cp $BASEROM_FILE c:/sm64pcBuilder/sm64pc-master/baserom.us.z64
 	fi
 fi
 
 if [ "$I_Want_Nightly" = true ]; then
     cd ./sm64pc-nightly
     if [ -f "$ROM_CHECK" ]; then
-    	printf "\n\n${GREEN}Existing baserom found${RESET}\n"
+    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	printf "\n${YELLOW}Place your baserom.us.z64 file in the ${NIGHTLY} folder located\nin c:/sm64pcBuilder${RESET}\n"
-		read -n 1 -r -s -p $'\nPRESS ENTER TO CONTINUE...\n'
+    	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
+    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
+    	cp $BASEROM_FILE c:/sm64pcBuilder/sm64pc-nightly/baserom.us.z64
 	fi
 fi
 
+# Swaps noupdate out of the $1 position
+if [ "$1" = noupdate ]; then
+	set -- "$2"
+fi
+
 # Checks to see if the libaudio directory and files exist
-if [ -d "$LIBDIR" -a -e "${LIBDIR}$LIBAFA" -a -e "${LIBDIR}$LIBAFLA"  ]; then
-    printf "\n${GREEN}libaudio files exist, going straight to compiling.${RESET}\n"
-else 
-    printf "\n${GREEN}libaudio files not found, starting initialization process.${RESET}\n\n"
+if [ -d "${LIBDIR}" -a -e "${LIBDIR}${LIBAFA}" -a -e "${LIBDIR}${LIBAFLA}"  ]; then
+    echo -e "\n${GREEN}libaudio files exist, going straight to compiling.${RESET}\n"
+elif [ "$I_Want_Master" = true ]; then
+	echo -e "\n${GREEN}libaudio files not found, starting initialization process.${RESET}\n\n"
 
-    printf "${YELLOW} Changing directory to: ${CYAN}${AUDDIR}${RESET}\n\n"
-		cd $AUDDIR
+    echo -e "${YELLOW} Changing directory to: ${CYAN}${AUDDIR}${RESET}\n\n"
+	cd $AUDDIR
 
-    printf "${YELLOW} Executing: ${CYAN}autoreconf -i${RESET}\n\n"
-		autoreconf -i
+    echo -e "${YELLOW} Executing: ${CYAN}autoreconf -i${RESET}\n\n"
+	autoreconf -i
 
-	#Checks the computer architecture
-	if [ `getconf LONG_BIT` = "64" ]; then
-    	printf "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
-			PATH=/mingw64/bin:/mingw32/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
+	echo -e "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
 
-    	printf "\n${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
-			PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	  PATH=/mingw64/bin:/mingw32/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
 	else
-		if [ `getconf LONG_BIT` = "32" ]; then
-			printf "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
-				PATH=/mingw32/bin:/mingw64/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
-
-    		printf "\n${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
-				PATH=/mingw32/bin:/mingw64/bin:$PATH make $1
-		fi
+	  PATH=/mingw32/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
 	fi
-    printf "\n${YELLOW} Making new directory ${CYAN}../lib${RESET}\n\n"
-		mkdir ../lib
 
+	echo -e "\n${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
 
-    printf "${YELLOW} Copying libaudio files to ${CYAN}../lib${RESET}\n\n"
-		cp libaudiofile/.libs/libaudiofile.a ../lib/
-		cp libaudiofile/.libs/libaudiofile.la ../lib/
-
-    printf "${YELLOW} Going up one directory.${RESET}\n\n"
-		cd ../
-		
-		#Checks if the Makefile has already been changed
-
-		sed -i 's/tabledesign_CFLAGS := -Wno-uninitialized -laudiofile/tabledesign_CFLAGS := -Wno-uninitialized -laudiofile -lstdc++/g' Makefile
-
-	#Checks the computer architecture
-    if [ `getconf LONG_BIT` = "64" ]; then
-    	printf "${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
-			PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
 	else
-		if [ `getconf LONG_BIT` = "32" ]; then
-			printf "${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
-				PATH=/mingw32/bin:/mingw64/bin:$PATH make $1
-		fi
+	  PATH=/mingw32/bin:$PATH make $1
 	fi
-    printf "\n${YELLOW} Going up one directory.${RESET}\n"
-		cd ../
-fi 
 
-#Patch menu
+    echo -e "\n${YELLOW} Making new directory ${CYAN}../lib${RESET}\n\n"
+	mkdir ../lib
+
+    echo -e "${YELLOW} Copying libaudio files to ${CYAN}../lib${RESET}\n\n"
+	cp libaudiofile/.libs/libaudiofile.a ../lib/
+	cp libaudiofile/.libs/libaudiofile.la ../lib/
+
+    echo -e "${YELLOW} Going up one directory.${RESET}\n\n"
+	cd ../
+
+	sed -i 's/tabledesign_CFLAGS := -Wno-uninitialized -laudiofile/tabledesign_CFLAGS := -Wno-uninitialized -laudiofile -lstdc++/g' Makefile
+
+	# Checks the computer architecture
+	echo -e "${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
+
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
+	else
+	  PATH=/mingw32/bin:$PATH make $1
+	fi
+
+    echo -e "\n${YELLOW} Going up one directory.${RESET}\n"
+		cd ../
+fi
+
+# Add-ons Menu
 while :
 do
     clear
-    cat<<EOF
-    ${YELLOW}==============================${RESET}
-    ${CYAN}Patch Menu${RESET}
-    ${YELLOW}------------------------------${RESET}
-    ${CYAN}Press a number to select:
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Add-ons Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a letter to select:
 
-    (1) 60 FPS Patch                    
-    (2) 60 FPS Patch Uncapped Framerate 
-    (3) HD Mario Model
-    (4) Download Reshade - Post processing effects                  
-    (C)ontinue
+(C)ontinue
+(U)ninstall Patches
+(M)odels
+(V)arious
+(E)nhancements
+(S)ound Packs
+(T)exture Packs
+(I)nstall Custom
 
-    ${GREEN}Press C without making a selection to
-    continue with no patches.${RESET}
-    ${RESET}${YELLOW}------------------------------${RESET}
-EOF
+${GREEN}Press C without making a selection to
+continue with no patches.${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "e")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Enhancements Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) 60 FPS Patch (WIP)
+(2) 60 FPS Patch Uncapped Framerate (WIP)
+(3) Don't Exit From Star Patch
+(4) Download Reshade - Post processing effects
+(C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
     read -n1 -s
     case "$REPLY" in
     "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
 			git apply ./enhancements/60fps_interpolation_wip.patch  --ignore-whitespace --reject
-			printf "$\n${GREEN}60 FPS Patch Selected${RESET}\n"
+			echo -e "$\n${GREEN}60 FPS Patch Selected${RESET}\n"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/715783586460205086/60fps_interpolation_wip.patch
 		  	cd ../
 	      	git apply ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
-          	printf "$\n${GREEN}60 FPS Patch Selected${RESET}\n"
-          fi 
+          	echo -e "$\n${GREEN}60 FPS Patch Selected${RESET}\n"
+          fi
+          sleep 2
             ;;
     "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
 			git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-			printf "$\n${GREEN}60 FPS Patch Uncapped Framerate Selected${RESET}\n"
+			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate Selected${RESET}\n"
 		  else
 		  	cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/716761081355173969/60fps_interpolation_wip_nocap.patch
 		  	cd ../
 		  	git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-		  	printf "$\n${GREEN}60 FPS Patch Uncapped Framerate Selected${RESET}\n"
+		  	echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate Selected${RESET}\n"
 		  fi
+		  sleep 2
             ;;
-    "3")  wget https://cdn.discordapp.com/attachments/710283360794181633/717479061664038992/HD_Mario_Model.rar
-		  unrar x -o+ HD_Mario_Model.rar
-		  rm HD_Mario_model.rar
-		  printf "$\n${GREEN}HD Mario Model Selected${RESET}\n"
+    "3")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
+			git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Don't Exit From Star Patch Selected${RESET}\n"
+		  else
+		  	cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/718584345912148100/720292073798107156/DontExitFromStar.patch
+		  	cd ../
+		  	git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
+		  	echo -e "$\n${GREEN}Don't Exit From Star Patch Selected${RESET}\n"
+		  fi
+		  sleep 2
             ;;
     "4")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
-		  printf "$\n${GREEN}Reshade Downloaded${RESET}\n"
+		  echo -e "$\n${GREEN}Reshade Downloaded${RESET}\n"
+		  sleep 2
       		;;
-    "c")  break                      
+    "c")  break
             ;;
-    "C")  echo "use lower case c!!"   
-            ;; 
-     * )  echo "invalid option"     
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
             ;;
     esac
-    sleep 2
+done
+			;;
+    "m")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Models Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) HD Mario | ${RED}Nightly Only, Needs External Resources${CYAN}
+(2) Old School HD Mario
+(3) HD Bowser
+(4) 3D Coin Patch v2
+(C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  wget https://cdn.discordapp.com/attachments/710283360794181633/717479061664038992/HD_Mario_Model.rar
+		  unrar x -o+ HD_Mario_Model.rar
+		  rm HD_Mario_model.rar
+		  echo -e "$\n${GREEN}HD Mario Selected${RESET}\n"
+		  sleep 2
+            ;;
+    "2")  wget https://cdn.discordapp.com/attachments/710283360794181633/719737291613929513/Old_School_HD_Mario_Model.zip
+		  unzip -o Old_School_HD_Mario_Model.zip
+		  rm Old_School_HD_Mario_Model.zip
+		  echo -e "$\n${GREEN}Old School HD Mario Selected${RESET}\n"
+		  sleep 2
+            ;;
+    "3")  wget https://cdn.discordapp.com/attachments/716459185230970880/718990046442684456/hd_bowser.rar
+		  unrar x -o+ hd_bowser.rar
+		  rm hd_bowser.rar
+		  echo -e "$\n${GREEN}HD Bowser Selected${RESET}\n"
+		  sleep 2
+            ;;
+    "4")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
+			git apply ./enhancements/3d_coin_v2.patch  --ignore-whitespace --reject
+			echo -e "$\n${GREEN}3D Coin Patch v2 Selected${RESET}\n"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/718674249631662120/3d_coin_v2.patch
+		  	cd ../
+	      	git apply ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}3D Coin Patch v2 Selected${RESET}\n"
+          fi
+          sleep 2
+            ;;
+    #"5")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
+		  #unrar x -o+ Hi_Poly_MIPS.rar
+		  #rm Hi_Poly_MIPS.rar
+		  #echo -e "$\n${GREEN}Hi-Poly MIPS Selected${RESET}\n"
+		  #sleep 2
+            #;;
+    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
+		  #unrar x -o+ Mario_Party_Whomp.rar
+		  #rm Mario_Party_Whomp.rar
+		  #echo -e "$\n${GREEN}Mario Party Whomp Selected${RESET}\n"
+		  #sleep 2
+            #;;
+    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
+		  #unrar x -o+ Mario_Party_Piranha_Plant.rar
+		  #rm Mario_Party_Piranha_Plant.rar
+		  #echo -e "$\n${GREEN}Mario Party Piranha Plant Selected${RESET}\n"
+		  #sleep 2
+            #;;
+    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
+		  #unrar x -o+ Hi_Poly_Penguin_1.4.rar
+		  #rm Hi_Poly_Penguin_1.4.rar
+		  #echo -e "$\n${GREEN}Hi-Poly Penguin 1.4 Selected${RESET}\n"
+		  #sleep 2
+            #;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "s")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Sound Packs Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) Super Mario Sunshine Mario Voice | ${RED}Nightly Only, Needs External Resources${CYAN}
+(C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  #wget https://cdn.discordapp.com/attachments/710283360794181633/718232544457523247/Sunshine_Mario_VO.rar
+		  #unrar x -o+ Sunshine_Mario_VO.rar
+		  #rm Sunshine_Mario_VO.rar
+		  wget https://cdn.discordapp.com/attachments/718584345912148100/719492399411232859/sunshinesounds.zip
+		  echo -e "$\n${GREEN}Super Mario Sunshine Mario Voice Selected${RESET}\n"
+		  sleep 2
+            ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "t")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Texture Packs Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) Hypatia´s Mario Craft 64 | ${RED}Nightly Only, Needs External Resources${RESET}
+${CYAN}(2) Mollymutt's Texture Pack | ${RED}Nightly Only, Needs External Resources
+(C)ontinue${RESET}
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  wget https://cdn.discordapp.com/attachments/718584345912148100/718901885657940091/Hypatia_Mario_Craft_Complete.part1.rar
+          wget https://cdn.discordapp.com/attachments/718584345912148100/718902211165290536/Hypatia_Mario_Craft_Complete.part2.rar
+          wget https://cdn.discordapp.com/attachments/718584345912148100/718902377553592370/Hypatia_Mario_Craft_Complete.part3.rar
+          if [ ! -f Hypatia_Mario_Craft_Complete.part3.rar ]; then
+          	echo -e "${RED}Your download fucked up"
+          else
+          	echo -e "$\n${GREEN}Hypatia´s Mario Craft 64 Selected${RESET}\n"
+          fi
+          sleep 2
+            ;;
+	"2")  wget https://cdn.discordapp.com/attachments/718584345912148100/719639977662611466/mollymutt.zip
+          if [ ! -f mollymutt.zip ]; then
+          	echo -e "${RED}Your download fucked up"
+          else
+          	echo -e "$\n${GREEN}Mollymutt's Texture Pack Selected${RESET}\n"
+          fi
+          sleep 2
+            ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "v")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Various Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) 120 Star Save | ${RED}Nightly Only${RESET}
+${CYAN}(C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  wget https://cdn.discordapp.com/attachments/710283360794181633/718232280224628796/sm64_save_file.bin
+		  if [ -f $APPDATA/sm64pc/sm64_save_file.bin ]; then
+		  	mv -f $APPDATA/sm64pc/sm64_save_file.bin $APPDATA/sm64pc/sm64_save_file.old.bin
+		  	mv sm64_save_file.bin $APPDATA/sm64pc/sm64_save_file.bin
+		  else
+		  	mv sm64_save_file.bin $APPDATA/sm64pc/sm64_save_file.bin
+		  fi
+		  echo -e "$\n${GREEN}120 Star Save Selected${RESET}\n"
+		  sleep 2
+            ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "u")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Uninstall Patch Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) Uninstall 60 FPS Patch (WIP)                    
+(2) Uninstall 60 FPS Patch Uncapped Framerate (WIP)
+(3) Uninstall 3D Coin Patch v2                
+(C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
+			git apply -R ./enhancements/60fps_interpolation_wip.patch  --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch Removed${RESET}\n"
+          fi
+          sleep 2
+            ;;
+    "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
+			git apply -R ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate Removed${RESET}\n"
+		  fi
+		  sleep 2
+            ;;
+    "3")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
+			git apply -R ./enhancements/3d_coin_v2.patch  --ignore-whitespace --reject
+			echo -e "$\n${GREEN}3D Coin Patch v2 Removed${RESET}\n"
+		  fi
+		  sleep 2
+		    ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "i")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Custom Install Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+(1) Install Patches                    
+(2) Install Texture Packs | ${RED}Nightly Only             
+${CYAN}(C)ontinue${RESET}
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  echo -e "\n${YELLOW}Select a patch to install${RESET}\n"
+    	  PATCH_FILE=$(zenity --file-selection --title="Select the patch file")
+    	  git apply $PATCH_FILE --ignore-whitespace --reject
+    	  echo -e "\n${GREEN}$PATCH_FILE selected${RESET}\n"
+          sleep 2
+            ;;
+    "2")  echo -e "\n${YELLOW}Select a texture pack to install${RESET}\n"
+    	  TEXTURE_PACK=$(zenity --file-selection --title="Select the texure pack zip file")
+  		  mkdir -p build/us_pc/res
+  		  cp $TEXTURE_PACK ./build/us_pc/res
+  		  echo -e "\n${GREEN}$TEXTURE_PACK selected${RESET}\n"
+		  sleep 2
+            ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
 done
 
-#Flags menu
-menu() {
-		printf "\nAvaliable options:\n"
-		for i in ${!OPTIONS[@]}; do 
-				printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${OPTIONS[i]}"
-		done
-		if [[ "$msg" ]]; then echo "$msg"; fi
-		printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
-		printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
-		printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
-		printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
-}
+# Master flags menu
+if [ "$I_Want_Master" = true ]; then
+	menu() {
+			printf "\nAvailable options:\n"
+			for i in ${!MASTER_OPTIONS[@]}; do 
+					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${MASTER_OPTIONS[i]}"
+			done
+			if [[ "$msg" ]]; then echo "$msg"; fi
+			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
+			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
+			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
+			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
+			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-master/build or sm64pc-nightly/build\n"
+			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
+	}
 
-prompt="Check an option (again to uncheck, press ENTER):"$'\n'
-while menu && read -rp "$prompt" num && [[ "$num" ]]; do
-		[[ "$num" != *[![:digit:]]* ]] &&
-		(( num > 0 && num <= ${#OPTIONS[@]} )) ||
-		{ msg="Invalid option: $num"; continue; }
-		((num--)); # msg="${OPTIONS[num]} was ${choices[num]:+un}checked"
-		[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
-done
+	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
+	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
+			[[ "$num" != *[![:digit:]]* ]] &&
+			(( num > 0 && num <= ${#MASTER_OPTIONS[@]} )) ||
+			{ msg="Invalid option: $num"; continue; }
+			((num--)); # msg="${MASTER_OPTIONS[num]} was ${choices[num]:+un}checked"
+			[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
+	done
 
-for i in ${!OPTIONS[@]}; do 
-		[[ "${choices[i]}" ]] && { CMDL+=" ${EXTRA[i]}"; }
-done 
+	for i in ${!MASTER_OPTIONS[@]}; do 
+			[[ "${choices[i]}" ]] && { CMDL+=" ${MASTER_EXTRA[i]}"; }
+	done
+fi
 
-#Checks the computer architecture
-if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "64" ]; then
-	#printf "${YELLOW}Only cross-compile if you intend to play the game on an OS that has a different\narchitecture than yours. ${RESET}\n"
-	#printf "${CYAN}Make sure to select \"Clean build\" before attempting to cross-compile. ${RESET}\n"
-	#printf "${GREEN}Would you like to cross-compile a 32-bit binary? ${CYAN}(y/n) ${RESET}\n"
-	#read answer
-	#if [ "$answer" != "${answer#[Yy]}" ]; then
-		#printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32 $1${RESET}\n\n"
-		#PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=32 $1
-	#else
-		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1${RESET}\n\n"
-		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
-	#fi
+# Nightly flags menu
+if [ "$I_Want_Nightly" = true ]; then
+	menu() {
+			printf "\nAvailable options:\n"
+			for i in ${!NIGHTLY_OPTIONS[@]}; do 
+					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${NIGHTLY_OPTIONS[i]}"
+			done
+			if [[ "$msg" ]]; then echo "$msg"; fi
+			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
+			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
+			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
+			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
+			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-master/build or sm64pc-nightly/build\n"
+			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
+	}
 
-	if [ "${CMDL}" != " clean" ] && [ `getconf LONG_BIT` = "32" ]; then
-		#printf "${YELLOW}Only cross-compile if you intend to play the game on an OS that has a different\narchitecture than yours. ${RESET}\n"
-		#printf "${CYAN}Make sure to select \"Clean build\" before attempting to cross-compile. ${RESET}\n"
-		#printf "${GREEN}Would you like to cross-compile a 64-bit binary? ${CYAN}(y/n) ${RESET}\n"
-		#read answer
-		#if [ "$answer" != "${answer#[Yy]}" ]; then
-			#printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=64 $1${RESET}\n\n"
-			#PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=64 $1
-		#else
-			printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} TARGET_BITS=32 $1${RESET}\n\n"
-			PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL TARGET_BITS=32 $1
-		#fi
+	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
+	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
+			[[ "$num" != *[![:digit:]]* ]] &&
+			(( num > 0 && num <= ${#NIGHTLY_OPTIONS[@]} )) ||
+			{ msg="Invalid option: $num"; continue; }
+			((num--)); # msg="${NIGHTLY_OPTIONS[num]} was ${choices[num]:+un}checked"
+			[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
+	done
+
+	for i in ${!NIGHTLY_OPTIONS[@]}; do 
+			[[ "${choices[i]}" ]] && { CMDL+=" ${NIGHTLY_EXTRA[i]}"; }
+	done
+fi
+
+# Checks the computer architecture
+if [ "${CMDL}" != " clean" ]; then
+	echo -e "\n${YELLOW} Executing: ${CYAN}make${CMDL} $1${RESET}\n\n"
+
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
+	else
+	  PATH=/mingw32/bin:$PATH make $CMDL $1
 	fi
 
 	if ls $BINARY 1> /dev/null 2>&1; then
 		if [ -f ReShade_Setup_4.6.1.exe ]; then
 			mv ./ReShade_Setup_4.6.1.exe ./build/us_pc/ReShade_Setup_4.6.1.exe
 		fi
-    	printf "\n${GREEN}The sm64pc binary is now available in the 'build/us_pc/' folder.\n"
-		printf "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+		
+		# Move sound packs
+		if [ -d ./build/us_pc/res ]; then
+			if [ -f sunshinesounds.zip ]; then
+				mv sunshinesounds.zip ./build/us_pc/res
+				rm sunshinesounds* # in case they exist from running the script before or selecting multiple times.
+			fi
+		fi
+				
+		# Move texture packs
+		if [ -d ./build/us_pc/res ]; then
+			if [ -f Hypatia_Mario_Craft_Complete.part3.rar ]; then
+				mkdir ./build/hmcc/
+				unrar x -o+ Hypatia_Mario_Craft_Complete.part1.rar ./build/hmcc/
+				mv ./build/hmcc/res ./build/hmcc/gfx
+				cd ./build/hmcc/
+				zip -r hypatiamariocraft gfx
+				mv hypatiamariocraft.zip ../../build/us_pc/res
+				cd ../../
+            	rm Hypatia_Mario_Craft_Complete.part*
+				rm -rf ./build/hmcc/
+			fi
+			if [ -f mollymutt.zip ]; then
+				mv mollymutt.zip ./build/us_pc/res
+			fi
+		fi
+		
+    	zenity --info \
+		--text="The sm64pc binary is now available in the 'build/us_pc/' folder."
+		echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
 		cd ./build/us_pc/
 		start .
-		break 2> /dev/null
-		return 2> /dev/null
 	else
-    	printf "\n${RED}Oh no! Something went wrong."
-	break 2> /dev/null
-	return 2> /dev/null
+    	echo -e "\n${RED}Oh no! Something went wrong."
 	fi
-	
+
 else
-	if [ `getconf LONG_BIT` = "64" ]; then
-		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1${RESET}\n\n"
-		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
+
+	echo -e "\n${YELLOW} Executing: ${CYAN}make${CMDL} $1${RESET}\n\n"
+
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
 	else
-		if [ `getconf LONG_BIT` = "32" ]; then
-		printf "\n${YELLOW} Executing: ${CYAN}make ${CMDL} $1${RESET}\n\n"
-		PATH=/mingw32/bin:/mingw64/bin:$PATH make $CMDL $1
-		fi
+	  PATH=/mingw32/bin:$PATH make $CMDL $1
 	fi
-	printf "\nYour build is now clean.\n"
-	return 2> /dev/null
-fi 
+
+	echo -e "${GREEN}\nYour build is now clean.\n"
+fi
