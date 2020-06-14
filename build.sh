@@ -100,7 +100,7 @@ pull_sm64pcbuilder () {
 	echo -e "\n${YELLOW}Downloading available build.sh updates...${RESET}\n"
 	git stash push
 	git stash drop
-	git pull https://github.com/gunvalk/sm64pcBuilder
+	git pull https://github.com/Filipianosol/sm64pcBuilder
 	echo -e "\n${GREEN}Restarting...${RESET}\n"
 	sleep 2
 	set -- "$1" "$2" "showchangelog"
