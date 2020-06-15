@@ -113,16 +113,16 @@ sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RES
 # Update message
 if [ "$3" = showchangelog ]; then
 	zenity --info  --text "
-SM64PC Builder
+SM64PC Builder (by BrineDude, coltonrawr, derailius, fgsfds, Filipianosol, gunvalk, Recompiler, serosis, and others)
 ------------------------------
 Updates:
 
--Use noupdate After ./build.sh Or -j
+- Use noupdate After ./build.sh Or -j
  To Skip Updating Master Or Nightly
--New DX11 & DX12 Renderer Options
--Antivirus Warning
--New Menu Prompts
--Custom Patch & Texture Pack
+- New DX11 & DX12 Renderer Options
+- Antivirus Warning
+- New Menu Prompts
+- Custom Patch & Texture Pack
  Selection
 
 ------------------------------
@@ -337,10 +337,10 @@ ${CYAN}Enhancements Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) 60 FPS Patch (WIP)
-(2) 60 FPS Patch Uncapped Framerate (WIP)
+(1) 60 FPS Patch (Destroys HD Gen 1 Mario Head, WIP)
+(2) 60 FPS Patch Uncapped Framerate (Destroys HD Gen 1 Mario Head, WIP)
 (3) Don't Exit From Star Patch
-(4) Download Reshade - Post processing effects
+(4) Download Reshade - Post processing effects (Glitchy as fuck for some people, only use if you're experienced)
 (C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -408,10 +408,11 @@ ${CYAN}Models Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) HD Mario | ${RED}Nightly Only, Needs External Resources${CYAN}
-(2) Old School HD Mario
+(1) HD Mario (First Gen) | ${RED}Nightly Only, Needs External Resources${CYAN}
+(2) HD Mario (Old School Style)
 (3) HD Bowser
 (4) 3D Coin Patch v2
+(5) N64 Luigi (Replaces Mario) | ${RED}Nightly Only, Needs External Resources${CYAN}
 (C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -422,13 +423,13 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     "1")  wget https://cdn.discordapp.com/attachments/710283360794181633/717479061664038992/HD_Mario_Model.rar
 		  unrar x -o+ HD_Mario_Model.rar
 		  rm HD_Mario_model.rar
-		  echo -e "$\n${GREEN}HD Mario Selected${RESET}\n"
+		  echo -e "$\n${GREEN}HD Mario (First Gen) Selected${RESET}\n"
 		  sleep 2
             ;;
     "2")  wget https://cdn.discordapp.com/attachments/710283360794181633/719737291613929513/Old_School_HD_Mario_Model.zip
 		  unzip -o Old_School_HD_Mario_Model.zip
 		  rm Old_School_HD_Mario_Model.zip
-		  echo -e "$\n${GREEN}Old School HD Mario Selected${RESET}\n"
+		  echo -e "$\n${GREEN}HD Mario (Old School Style) Selected${RESET}\n"
 		  sleep 2
             ;;
     "3")  wget https://cdn.discordapp.com/attachments/716459185230970880/718990046442684456/hd_bowser.rar
@@ -449,25 +450,31 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           fi
           sleep 2
             ;;
-    #"5")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
+    "5")  wget https://cdn.discordapp.com/attachments/720090270863196210/720903424744357968/LuigiMod.zip
+		  unzip -o LuigiMod.zip
+		  rm LuigiMod.zip
+		  echo -e "$\n${GREEN}L IS REAL 2401${RESET}\n"
+		  sleep 2
+            ;;
+    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
 		  #unrar x -o+ Hi_Poly_MIPS.rar
 		  #rm Hi_Poly_MIPS.rar
 		  #echo -e "$\n${GREEN}Hi-Poly MIPS Selected${RESET}\n"
 		  #sleep 2
             #;;
-    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
+    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
 		  #unrar x -o+ Mario_Party_Whomp.rar
 		  #rm Mario_Party_Whomp.rar
 		  #echo -e "$\n${GREEN}Mario Party Whomp Selected${RESET}\n"
 		  #sleep 2
             #;;
-    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
+    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
 		  #unrar x -o+ Mario_Party_Piranha_Plant.rar
 		  #rm Mario_Party_Piranha_Plant.rar
 		  #echo -e "$\n${GREEN}Mario Party Piranha Plant Selected${RESET}\n"
 		  #sleep 2
             #;;
-    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
+    #"9")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
 		  #unrar x -o+ Hi_Poly_Penguin_1.4.rar
 		  #rm Hi_Poly_Penguin_1.4.rar
 		  #echo -e "$\n${GREEN}Hi-Poly Penguin 1.4 Selected${RESET}\n"
