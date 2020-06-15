@@ -409,8 +409,8 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 (1) HD Mario (First Gen) | ${RED}Nightly Only, Needs External Resources${CYAN}
-(2) HD Mario (Old School Style) | ${RED}Nightly Only, Needs External Resources${CYAN}
-(3) HD Bowser | ${RED}Nightly Only, Needs External Resources${CYAN}
+(2) HD Mario (Old School Style)
+(3) HD Bowser
 (4) 3D Coin Patch v2
 (5) N64 Luigi (Replaces Mario) | ${RED}Nightly Only, Needs External Resources${CYAN}
 (C)ontinue
