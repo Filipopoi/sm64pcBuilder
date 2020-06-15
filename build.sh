@@ -337,10 +337,8 @@ ${CYAN}Enhancements Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) 60 FPS Patch
-   (Destroys HD Mario's head if using the first gen model)
-(2) 60 FPS Patch Uncapped Framerate
-   (Destroys HD Mario's head if using the first gen model)
+(1) 60 FPS Patch (Destroys HD Gen 1 Mario Head, WIP)
+(2) 60 FPS Patch Uncapped Framerate (Destroys HD Gen 1 Mario Head, WIP)
 (3) Don't Exit From Star Patch
 (4) Download Reshade - Post processing effects (Glitchy as fuck for some people, only use if you're experienced)
 (C)ontinue
