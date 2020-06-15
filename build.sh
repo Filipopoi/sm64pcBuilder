@@ -113,7 +113,7 @@ sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RES
 # Update message
 if [ "$3" = showchangelog ]; then
 	zenity --info  --text "
-SM64PC Builder (by BrineDude, coltonrawr, derailius, fgsfds, Filipianosol, gunvalk, Recompiler, serosis, and others)
+SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds, BrineDude, Recompiler, and others)
 ------------------------------
 Updates:
 
@@ -340,7 +340,8 @@ ${CYAN}Press a number to select:
 (1) 60 FPS Patch (Destroys HD Gen 1 Mario Head, WIP)
 (2) 60 FPS Patch Uncapped Framerate (Destroys HD Gen 1 Mario Head, WIP)
 (3) Don't Exit From Star Patch
-(4) Download Reshade - Post processing effects (Glitchy as fuck for some people, only use if you're experienced)
+(4) Better Mouse Support and Better Cam Fixes
+(5) Download Reshade - Post processing effects (Glitchy as fuck for some people, only use if you're experienced)
 (C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -384,7 +385,19 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  fi
 		  sleep 2
             ;;
-    "4")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
+    "4")  if [[ -f "./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch" ]]; then
+			git apply ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch  --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch Selected${RESET}\n"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/721872556700991578/0001-Added-better-mouse-support-and-bettercam-fixes.patch
+		  	cd ../
+	      	git apply ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes Selected${RESET}\n"
+          fi
+          sleep 2
+            ;;
+    "5")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
 		  echo -e "$\n${GREEN}Reshade Downloaded${RESET}\n"
 		  sleep 2
       		;;
@@ -456,28 +469,28 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  echo -e "$\n${GREEN}L IS REAL 2401${RESET}\n"
 		  sleep 2
             ;;
-    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
-		  #unrar x -o+ Hi_Poly_MIPS.rar
-		  #rm Hi_Poly_MIPS.rar
-		  #echo -e "$\n${GREEN}Hi-Poly MIPS Selected${RESET}\n"
-		  #sleep 2
-            #;;
-    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
+    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
 		  #unrar x -o+ Mario_Party_Whomp.rar
 		  #rm Mario_Party_Whomp.rar
 		  #echo -e "$\n${GREEN}Mario Party Whomp Selected${RESET}\n"
 		  #sleep 2
             #;;
-    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
+    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
 		  #unrar x -o+ Mario_Party_Piranha_Plant.rar
 		  #rm Mario_Party_Piranha_Plant.rar
 		  #echo -e "$\n${GREEN}Mario Party Piranha Plant Selected${RESET}\n"
 		  #sleep 2
             #;;
-    #"9")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
+    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
 		  #unrar x -o+ Hi_Poly_Penguin_1.4.rar
 		  #rm Hi_Poly_Penguin_1.4.rar
 		  #echo -e "$\n${GREEN}Hi-Poly Penguin 1.4 Selected${RESET}\n"
+		  #sleep 2
+            #;;
+    #"9")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
+		  #unrar x -o+ Hi_Poly_MIPS.rar
+		  #rm Hi_Poly_MIPS.rar
+		  #echo -e "$\n${GREEN}Hi-Poly MIPS Selected${RESET}\n"
 		  #sleep 2
             #;;
     "c")  break
@@ -819,8 +832,8 @@ if [ "${CMDL}" != " clean" ]; then
 		cd ./build/us_pc/
 		start .
 	else
-    	zenity --warning \
-        --text="Oh no! Something went wrong."
+		zenity --warning \
+		--text="Oh no! Something went wrong."
 	fi
 
 else
