@@ -118,15 +118,16 @@ SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds
 Updates:
 
 - Use noupdate After ./build.sh Or -j
- To Skip Updating Master Or Nightly
-- New DX11 & DX12 Renderer Options
-- Antivirus Warning
-- New Menu Prompts
-- Custom Patch & Texture Pack
- Selection
+  To Skip Updating Master Or Nightly
+- Better Mouse Support and Better Cam
+  Fixes by Funny unu boi
+- Enable Debug Level Selector (WIP)
+  by Funny unu boi
+- Selected Add-ons Now Marked With
+  a + Sign
 
 ------------------------------
-build.sh Update 19.5"
+build.sh Update 20"
 fi
 
 # Gives options to download from GitHub
