@@ -104,7 +104,7 @@ pull_sm64pcbuilder () {
 	echo -e "\n${GREEN}Restarting...${RESET}\n"
 	sleep 2
 	set -- "$1" "$2" "showchangelog"
-	exec ./build.sh "$@" 
+	exec ./build.sh "$@"
 }
 
 [ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
@@ -313,14 +313,14 @@ ${CYAN}Add-ons Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a letter to select:
 
-(C)ontinue
-(U)ninstall Patches
-(M)odels
-(V)arious
-(E)nhancements
-(S)ound Packs
-(T)exture Packs
-(I)nstall Custom
+C)ontinue
+U)ninstall Patches
+M)odels
+V)arious
+E)nhancements
+S)ound Packs
+T)exture Packs
+I)nstall Custom
 
 ${GREEN}Press C without making a selection to
 continue with no patches.${RESET}
@@ -337,14 +337,14 @@ ${CYAN}Enhancements Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
-(2) 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP)
-(3) Don't Exit From Star Patch by Keanine
-(4) Better Mouse Support and Better Cam Fixes by Funny unu boi
-(5) Enable Debug Level Selector by Funny unu boi
-(6) Download Reshade - Post processing effects (Glitchy as fuck for some people,
+1$e_selection1) 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
+2$e_selection2) 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP)
+3$e_selection3) Don't Exit From Star Patch by Keanine
+4$e_selection4) Better Mouse Support and Better Cam Fixes by Funny unu boi
+5$e_selection5) Enable Debug Level Selector (WIP) by Funny unu boi
+6$e_selection6) Download Reshade - Post processing effects (Glitchy as fuck for some people,
     only use if you're experienced)
-(C)ontinue
+C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -354,65 +354,76 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
 			git apply ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}60 FPS Patch (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+			e_selection1="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/715783586460205086/60fps_interpolation_wip.patch
 		  	cd ../
 	      	git apply ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
           	echo -e "$\n${GREEN}60 FPS Patch (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+		e_selection1="+"
           fi
           sleep 2
             ;;
     "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
 			git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+			e_selection2="+"
 		  else
 		  	cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/716761081355173969/60fps_interpolation_wip_nocap.patch
 		  	cd ../
 		  	git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
 		  	echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+			e_selection2="+"
 		  fi
 		  sleep 2
             ;;
     "3")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
 			git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Don't Exit From Star Patch by Keanine Selected${RESET}\n"
+			e_selection3="+"
 		  else
 		  	cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/718584345912148100/720292073798107156/DontExitFromStar.patch
 		  	cd ../
 		  	git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
 		  	echo -e "$\n${GREEN}Don't Exit From Star Patch by Keanine Selected${RESET}\n"
+			e_selection3="+"
 		  fi
 		  sleep 2
             ;;
     "4")  if [[ -f "./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch" ]]; then
 			git apply ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes by Funny unu boi Selected${RESET}\n"
+			e_selection4="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/716459185230970880/721872556700991578/0001-Added-better-mouse-support-and-bettercam-fixes.patch
 		  	cd ../
 	      	git apply ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
           	echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes by Funny unu boi Selected${RESET}\n"
+		e_selection4="+"
           fi
           sleep 2
             ;;
     "5")  if [[ -f "./enhancements/0001-Enable-debug-level-selector.patch" ]]; then
-			git apply ./enhancements/0001-Enable-debug-level-selector.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Enable Debug Level Selector by Funny unu boi Selected${RESET}\n"
+			git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Selected${RESET}\n"
+			e_selection5="+"
 		  else
 			cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722438440637038732/0001-Enable-debug-level-selector.patch
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722566901749907496/0001-WIP-Enable-debug-level-selector.patch
 		  	cd ../
-	      	git apply ./enhancements/0001-Enable-debug-level-selector.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}Enable Debug Level Selector by Funny unu boi Selected${RESET}\n"
+	      	git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Selected${RESET}\n"
+		e_selection5="+"
           fi
           sleep 2
             ;;
     "6")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
 		  echo -e "$\n${GREEN}Reshade Downloaded${RESET}\n"
+		  e_selection6="+"
 		  sleep 2
       		;;
     "c")  break
@@ -435,13 +446,13 @@ ${CYAN}Models Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) HD Mario by Arredondo | ${RED}Nightly Only, Needs External Resources${CYAN}
-(2) HD Mario (Old School Style) by Xinus, ported by TzKet-Death
-(3) HD Bowser by Arredondo
-(4) 3D Coin Patch v2 by grego2d and TzKet-Death
-(5) N64 Luigi (Replaces Mario) by Cjes, rise, and Weegeepie | ${RED}Nightly Only,
+1$m_selection1) HD Mario by Arredondo | ${RED}Nightly Only, Needs External Resources${CYAN}
+2$m_selection2) HD Mario (Old School Style) by Xinus, ported by TzKet-Death
+3$m_selection3) HD Bowser by Arredondo
+4$m_selection4) 3D Coin Patch v2 by grego2d and TzKet-Death
+5$m_selection5) N64 Luigi (Replaces Mario) by Cjes, rise, and Weegeepie | ${RED}Nightly Only,
     Needs External Resources${CYAN}
-(C)ontinue
+C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -452,29 +463,34 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  unrar x -o+ HD_Mario_Model.rar
 		  rm HD_Mario_model.rar
 		  echo -e "$\n${GREEN}HD Mario by Arredondo Selected${RESET}\n"
+		  m_selection1="+"
 		  sleep 2
             ;;
     "2")  wget https://cdn.discordapp.com/attachments/710283360794181633/719737291613929513/Old_School_HD_Mario_Model.zip
 		  unzip -o Old_School_HD_Mario_Model.zip
 		  rm Old_School_HD_Mario_Model.zip
 		  echo -e "$\n${GREEN}HD Mario (Old School Style) by Xinus, ported by TzKet-Death Selected${RESET}\n"
+		  m_selection2="+"
 		  sleep 2
             ;;
     "3")  wget https://cdn.discordapp.com/attachments/716459185230970880/718990046442684456/hd_bowser.rar
 		  unrar x -o+ hd_bowser.rar
 		  rm hd_bowser.rar
 		  echo -e "$\n${GREEN}HD Bowser by Arredondo Selected${RESET}\n"
+		  m_selection3="+"
 		  sleep 2
             ;;
     "4")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
 			git apply ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}3D Coin Patch v2 by grego2d and TzKet-Death Selected${RESET}\n"
+			m_selection4="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/716459185230970880/718674249631662120/3d_coin_v2.patch
 		  	cd ../
 	      	git apply ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
           	echo -e "$\n${GREEN}3D Coin Patch v2 by grego2d and TzKet-Death Selected${RESET}\n"
+		m_selection4="+"
           fi
           sleep 2
             ;;
@@ -482,30 +498,35 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  unzip -o LuigiMod.zip
 		  rm LuigiMod.zip
 		  echo -e "$\n${GREEN}L IS REAL 2401${RESET}\n"
+		  m_selection5="+"
 		  sleep 2
             ;;
-    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
-		  #unrar x -o+ Mario_Party_Whomp.rar
-		  #rm Mario_Party_Whomp.rar
-		  #echo -e "$\n${GREEN}Mario Party Whomp Selected${RESET}\n"
-		  #sleep 2
-            #;;
-    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
-		  #unrar x -o+ Mario_Party_Piranha_Plant.rar
-		  #rm Mario_Party_Piranha_Plant.rar
-		  #echo -e "$\n${GREEN}Mario Party Piranha Plant Selected${RESET}\n"
-		  #sleep 2
-            #;;
-    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
-		  #unrar x -o+ Hi_Poly_Penguin_1.4.rar
-		  #rm Hi_Poly_Penguin_1.4.rar
-		  #echo -e "$\n${GREEN}Hi-Poly Penguin 1.4 Selected${RESET}\n"
-		  #sleep 2
-            #;;
-    #"9")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
+    #"6")  wget https://cdn.discordapp.com/attachments/716459185230970880/718994292311326730/Hi_Poly_MIPS.rar
 		  #unrar x -o+ Hi_Poly_MIPS.rar
 		  #rm Hi_Poly_MIPS.rar
 		  #echo -e "$\n${GREEN}Hi-Poly MIPS Selected${RESET}\n"
+		  #m_selection6="+"
+		  #sleep 2
+            #;;
+    #"7")  wget https://cdn.discordapp.com/attachments/716459185230970880/718999316194263060/Mario_Party_Whomp.rar
+		  #unrar x -o+ Mario_Party_Whomp.rar
+		  #rm Mario_Party_Whomp.rar
+		  #echo -e "$\n${GREEN}Mario Party Whomp Selected${RESET}\n"
+		  #m_selection7="+"
+		  #sleep 2
+            #;;
+    #"8")  wget https://cdn.discordapp.com/attachments/716459185230970880/719001278184685598/Mario_Party_Piranha_Plant.rar
+		  #unrar x -o+ Mario_Party_Piranha_Plant.rar
+		  #rm Mario_Party_Piranha_Plant.rar
+		  #echo -e "$\n${GREEN}Mario Party Piranha Plant Selected${RESET}\n"
+		  #m_selection8="+"
+		  #sleep 2
+            #;;
+    #"9")  wget https://cdn.discordapp.com/attachments/716459185230970880/719004227464331394/Hi_Poly_Penguin_1.4.rar
+		  #unrar x -o+ Hi_Poly_Penguin_1.4.rar
+		  #rm Hi_Poly_Penguin_1.4.rar
+		  #echo -e "$\n${GREEN}Hi-Poly Penguin 1.4 Selected${RESET}\n"
+		  #m_selection9="+"
 		  #sleep 2
             #;;
     "c")  break
@@ -528,9 +549,9 @@ ${CYAN}Sound Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) Super Mario Sunshine Mario Voice by !!!! Kris The Goat | ${RED}Nightly Only, Needs
+1$s_selection1) Super Mario Sunshine Mario Voice by !!!! Kris The Goat | ${RED}Nightly Only, Needs
     External Resources${CYAN}
-(C)ontinue
+C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -542,6 +563,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  #rm Sunshine_Mario_VO.rar
 		  wget https://cdn.discordapp.com/attachments/718584345912148100/719492399411232859/sunshinesounds.zip
 		  echo -e "$\n${GREEN}Super Mario Sunshine Mario Voice by !!!! Kris The Goat Selected${RESET}\n"
+		  s_selection1="+"
 		  sleep 2
             ;;
     "c")  break
@@ -564,9 +586,9 @@ ${CYAN}Texture Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) Hypatia´s Mario Craft 64 | ${RED}Nightly Only, Needs External Resources${RESET}
-${CYAN}(2) Mollymutt's Texture Pack | ${RED}Nightly Only, Needs External Resources
-${CYAN}(C)ontinue${RESET}
+1$t_selection1) Hypatia´s Mario Craft 64 | ${RED}Nightly Only, Needs External Resources${RESET}
+${CYAN}2$t_selection2) Mollymutt's Texture Pack | ${RED}Nightly Only, Needs External Resources
+${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -580,6 +602,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           	echo -e "${RED}Your download fucked up"
           else
           	echo -e "$\n${GREEN}Hypatia´s Mario Craft 64 Selected${RESET}\n"
+		t_selection1="+"
           fi
           sleep 2
             ;;
@@ -588,6 +611,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           	echo -e "${RED}Your download fucked up"
           else
           	echo -e "$\n${GREEN}Mollymutt's Texture Pack Selected${RESET}\n"
+		t_selection2="+"
           fi
           sleep 2
             ;;
@@ -611,8 +635,8 @@ ${CYAN}Various Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) 120 Star Save | ${RED}Nightly Only${RESET}
-${CYAN}(C)ontinue
+1$v_selection1) 120 Star Save | ${RED}Nightly Only${RESET}
+${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -627,6 +651,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  	mv sm64_save_file.bin $APPDATA/sm64pc/sm64_save_file.bin
 		  fi
 		  echo -e "$\n${GREEN}120 Star Save Selected${RESET}\n"
+		  v_selection1="+"
 		  sleep 2
             ;;
     "c")  break
@@ -649,14 +674,14 @@ ${CYAN}Uninstall Patch Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) Uninstall 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
-(2) Uninstall 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head,
+1$u_selection1) Uninstall 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
+2$u_selection2) Uninstall 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head,
     WIP)
-(3) Uninstall 3D Coin Patch v2 by grego2d and TzKet-Death
-(4) Uninstall Don't Exit From Star Patch by Keanine
-(5) Uninstall Better Mouse Support and Better Cam Fixes by Funny unu boi
-(6) Uninstall Enable Debug Level Selector by Funny unu boi
-(C)ontinue
+3$u_selection3) Uninstall 3D Coin Patch v2 by grego2d and TzKet-Death
+4$u_selection4) Uninstall Don't Exit From Star Patch by Keanine
+5$u_selection5) Uninstall Better Mouse Support and Better Cam Fixes by Funny unu boi
+6$u_selection6) Uninstall Enable Debug Level Selector (WIP) by Funny unu boi
+C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -666,36 +691,42 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
 			git apply -R ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}60 FPS Patch (Destroys Arredondo HD Mario Head, WIP) Removed${RESET}\n"
+			u_selection1="+"
           fi
           sleep 2
             ;;
     "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
 			git apply -R ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP) Removed${RESET}\n"
+			u_selection2="+"
 		  fi
 		  sleep 2
             ;;
     "3")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
 			git apply -R ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}3D Coin Patch v2 by grego2d and TzKet-Death Removed${RESET}\n"
+			u_selection3="+"
 		  fi
 		  sleep 2
 		    ;;
     "4")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
 			git apply -R ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Don't Exit From Star Patch by Keanine Removed${RESET}\n"
+			u_selection4="+"
 		  fi
 		  sleep 2
 		    ;;
     "5")  if [[ -f "./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch" ]]; then
 			git apply -R ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes by Funny unu boi Removed${RESET}\n"
+			u_selection5="+"
 		  fi
 		  sleep 2
 		    ;;
     "6")  if [[ -f "./enhancements/0001-Enable-debug-level-selector.patch" ]]; then
-			git apply -R ./enhancements/0001-Enable-debug-level-selector.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Enable Debug Level Selector by Funny unu boi Removed${RESET}\n"
+			git apply -R ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Removed${RESET}\n"
+			u_selection6="+"
 		  fi
 		  sleep 2
 		    ;;
@@ -719,9 +750,9 @@ ${CYAN}Custom Install Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-(1) Install Patches                    
-(2) Install Texture Packs | ${RED}Nightly Only             
-${CYAN}(C)ontinue${RESET}
+1) Install Patches                    
+2) Install Texture Packs | ${RED}Nightly Only             
+${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
