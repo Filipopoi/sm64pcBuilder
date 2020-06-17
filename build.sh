@@ -119,8 +119,8 @@ Updates:
 
 - Use noupdate After ./build.sh Or -j
   To Skip Updating Master Or Nightly
-- Better Mouse Support and Better Cam
-  Fixes by Funny unu boi
+- Mouse Support and Fixes for Reshade
+  (WIP) by Funny unu boi
 - Enable Debug Level Selector (WIP)
   by Funny unu boi
 - Selected Add-ons Now Marked With
@@ -341,10 +341,10 @@ ${CYAN}Press a number to select:
 1$e_selection1) 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
 2$e_selection2) 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP)
 3$e_selection3) Don't Exit From Star Patch by Keanine
-4$e_selection4) Better Mouse Support and Better Cam Fixes by Funny unu boi
+4$e_selection4) Mouse Support and Fixes for Reshade (WIP) by Funny unu boi
 5$e_selection5) Enable Debug Level Selector (WIP) by Funny unu boi
 6$e_selection6) Download Reshade - Post processing effects (Glitchy as fuck for some people,
-    only use if you're experienced)
+   only use if you're experienced)
 C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -394,16 +394,16 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  fi
 		  sleep 2
             ;;
-    "4")  if [[ -f "./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch" ]]; then
-			git apply ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes by Funny unu boi Selected${RESET}\n"
+    "4")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
+			git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by Funny unu boi Selected${RESET}\n"
 			e_selection4="+"
 		  else
 			cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/716459185230970880/721872556700991578/0001-Added-better-mouse-support-and-bettercam-fixes.patch
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722662190267760660/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch
 		  	cd ../
-	      	git apply ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes by Funny unu boi Selected${RESET}\n"
+	      	git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by Funny unu boi Selected${RESET}\n"
 		e_selection4="+"
           fi
           sleep 2
@@ -452,7 +452,7 @@ ${CYAN}Press a number to select:
 3$m_selection3) HD Bowser by Arredondo
 4$m_selection4) 3D Coin Patch v2 by grego2d and TzKet-Death
 5$m_selection5) N64 Luigi (Replaces Mario) by Cjes, rise, and Weegeepie | ${RED}Nightly Only,
-    Needs External Resources${CYAN}
+   Needs External Resources${CYAN}
 C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -551,7 +551,7 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$s_selection1) Super Mario Sunshine Mario Voice by !!!! Kris The Goat | ${RED}Nightly Only, Needs
-    External Resources${CYAN}
+   External Resources${CYAN}
 C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -677,10 +677,10 @@ ${CYAN}Press a number to select:
 
 1$u_selection1) Uninstall 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
 2$u_selection2) Uninstall 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head,
-    WIP)
+   WIP)
 3$u_selection3) Uninstall 3D Coin Patch v2 by grego2d and TzKet-Death
 4$u_selection4) Uninstall Don't Exit From Star Patch by Keanine
-5$u_selection5) Uninstall Better Mouse Support and Better Cam Fixes by Funny unu boi
+5$u_selection5) Uninstall Mouse Support and Fixes for Reshade (WIP) by Funny unu boi
 6$u_selection6) Uninstall Enable Debug Level Selector (WIP) by Funny unu boi
 C)ontinue
 
@@ -717,9 +717,9 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  fi
 		  sleep 2
 		    ;;
-    "5")  if [[ -f "./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch" ]]; then
-			git apply -R ./enhancements/0001-Added-better-mouse-support-and-bettercam-fixes.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Better Mouse Support and Better Cam Fixes by Funny unu boi Removed${RESET}\n"
+    "5")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
+			git apply -R ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by Funny unu boi Removed${RESET}\n"
 			u_selection5="+"
 		  fi
 		  sleep 2
