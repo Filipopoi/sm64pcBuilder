@@ -408,7 +408,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           fi
           sleep 2
             ;;
-    "5")  if [[ -f "./enhancements/0001-Enable-debug-level-selector.patch" ]]; then
+    "5")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
 			git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Selected${RESET}\n"
 			e_selection5="+"
@@ -724,7 +724,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  fi
 		  sleep 2
 		    ;;
-    "6")  if [[ -f "./enhancements/0001-Enable-debug-level-selector.patch" ]]; then
+    "6")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
 			git apply -R ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Removed${RESET}\n"
 			u_selection6="+"
