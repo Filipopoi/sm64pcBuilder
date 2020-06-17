@@ -125,9 +125,16 @@ Updates:
   by Funny unu boi
 - Selected Add-ons Now Marked With
   a + Sign
+- Stay in Level After Star, BLJ
+  Anywhere, Increase Delay on Star
+  Select, Go Back to Title Screen from
+  Ending by GateGuy
+- Fixes Submenu
+- Uninstall Submenus
+- New Add-ons Colors
 
 ------------------------------
-build.sh Update 20"
+build.sh Update 20.1"
 fi
 
 # Gives options to download from GitHub
@@ -321,6 +328,7 @@ V)arious
 E)nhancements
 S)ound Packs
 T)exture Packs
+F)ixes
 I)nstall Custom
 
 ${GREEN}Press C without making a selection to
@@ -338,12 +346,12 @@ ${CYAN}Enhancements Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$e_selection1) 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
-2$e_selection2) 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP)
-3$e_selection3) Don't Exit From Star Patch by Keanine
-4$e_selection4) Mouse Support and Fixes for Reshade (WIP) by Funny unu boi
-5$e_selection5) Enable Debug Level Selector (WIP) by Funny unu boi
-6$e_selection6) Download Reshade - Post processing effects (Glitchy as fuck for some people,
+1$e_selection1) 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP)
+2$e_selection2) 60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP)
+3$e_selection3) Don't Exit From Star Patch by ${YELLOW}Keanine
+${CYAN}4$e_selection4) Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
+   cheats)
+${CYAN}5$e_selection5) Download Reshade - Post processing effects (Glitchy as fuck for some people,
    only use if you're experienced)
 C)ontinue
 
@@ -354,77 +362,63 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     case "$REPLY" in
     "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
 			git apply ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}60 FPS Patch (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+			echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
 			e_selection1="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/715783586460205086/60fps_interpolation_wip.patch
 		  	cd ../
 	      	git apply ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}60 FPS Patch (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+          	echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
 		e_selection1="+"
           fi
           sleep 2
             ;;
     "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
 			git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
 			e_selection2="+"
 		  else
 		  	cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/716761081355173969/60fps_interpolation_wip_nocap.patch
 		  	cd ../
 		  	git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-		  	echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP) Selected${RESET}\n"
+		  	echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
 			e_selection2="+"
 		  fi
 		  sleep 2
             ;;
     "3")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
 			git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Don't Exit From Star Patch by Keanine Selected${RESET}\n"
+			echo -e "$\n${GREEN}Don't Exit From Star Patch by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
 			e_selection3="+"
 		  else
 		  	cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/718584345912148100/720292073798107156/DontExitFromStar.patch
 		  	cd ../
 		  	git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
-		  	echo -e "$\n${GREEN}Don't Exit From Star Patch by Keanine Selected${RESET}\n"
+		  	echo -e "$\n${GREEN}Don't Exit From Star Patch by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
 			e_selection3="+"
 		  fi
 		  sleep 2
             ;;
-    "4")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
-			git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by Funny unu boi Selected${RESET}\n"
+    "4")  if [[ -f "./enhancements/stay_after_star_nonstop_mode_cheat.patch" ]]; then
+			git apply ./enhancements/stay_after_star_nonstop_mode_cheat.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Stay in Level After Star by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
 			e_selection4="+"
 		  else
 			cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722662190267760660/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722831880701083648/stay_after_star_nonstop_mode_cheat.patch
 		  	cd ../
-	      	git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by Funny unu boi Selected${RESET}\n"
+	      	git apply ./enhancements/stay_after_star_nonstop_mode_cheat.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Stay in Level After Star by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
 		e_selection4="+"
           fi
           sleep 2
             ;;
-    "5")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
-			git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Selected${RESET}\n"
-			e_selection5="+"
-		  else
-			cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722566901749907496/0001-WIP-Enable-debug-level-selector.patch
-		  	cd ../
-	      	git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Selected${RESET}\n"
-		e_selection5="+"
-          fi
-          sleep 2
-            ;;
-    "6")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
+    "5")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
 		  echo -e "$\n${GREEN}Reshade Downloaded${RESET}\n"
-		  e_selection6="+"
+		  e_selection5="+"
 		  sleep 2
       		;;
     "c")  break
@@ -447,11 +441,11 @@ ${CYAN}Models Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$m_selection1) HD Mario by Arredondo | ${RED}Nightly Only, Needs External Resources${CYAN}
-2$m_selection2) HD Mario (Old School Style) by Xinus, ported by TzKet-Death
-3$m_selection3) HD Bowser by Arredondo
-4$m_selection4) 3D Coin Patch v2 by grego2d and TzKet-Death
-5$m_selection5) N64 Luigi (Replaces Mario) by Cjes, rise, and Weegeepie | ${RED}Nightly Only,
+1$m_selection1) HD Mario by ${YELLOW}Arredondo | ${RED}Nightly Only, Needs External Resources${CYAN}
+2$m_selection2) HD Mario (Old School Style) by ${YELLOW}Xinus${CYAN}, ported by ${YELLOW}TzKet-Death
+${CYAN}3$m_selection3) HD Bowser by ${YELLOW}Arredondo
+${CYAN}4$m_selection4) 3D Coin Patch v2 by ${YELLOW}grego2d ${CYAN}and ${YELLOW}TzKet-Death
+${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie ${CYAN}| ${RED}Nightly Only,
    Needs External Resources${CYAN}
 C)ontinue
 
@@ -463,34 +457,34 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     "1")  wget https://cdn.discordapp.com/attachments/710283360794181633/717479061664038992/HD_Mario_Model.rar
 		  unrar x -o+ HD_Mario_Model.rar
 		  rm HD_Mario_model.rar
-		  echo -e "$\n${GREEN}HD Mario by Arredondo Selected${RESET}\n"
+		  echo -e "$\n${GREEN}HD Mario by ${YELLOW}Arredondo ${GREEN}Selected${RESET}\n"
 		  m_selection1="+"
 		  sleep 2
             ;;
     "2")  wget https://cdn.discordapp.com/attachments/710283360794181633/719737291613929513/Old_School_HD_Mario_Model.zip
 		  unzip -o Old_School_HD_Mario_Model.zip
 		  rm Old_School_HD_Mario_Model.zip
-		  echo -e "$\n${GREEN}HD Mario (Old School Style) by Xinus, ported by TzKet-Death Selected${RESET}\n"
+		  echo -e "$\n${GREEN}HD Mario (Old School Style) by ${YELLOW}Xinus${GREEN}, ported by ${YELLOW}TzKet-Death ${GREEN}Selected${RESET}\n"
 		  m_selection2="+"
 		  sleep 2
             ;;
     "3")  wget https://cdn.discordapp.com/attachments/716459185230970880/718990046442684456/hd_bowser.rar
 		  unrar x -o+ hd_bowser.rar
 		  rm hd_bowser.rar
-		  echo -e "$\n${GREEN}HD Bowser by Arredondo Selected${RESET}\n"
+		  echo -e "$\n${GREEN}HD Bowser by ${YELLOW}Arredondo ${GREEN}Selected${RESET}\n"
 		  m_selection3="+"
 		  sleep 2
             ;;
     "4")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
 			git apply ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}3D Coin Patch v2 by grego2d and TzKet-Death Selected${RESET}\n"
+			echo -e "$\n${GREEN}3D Coin Patch v2 by ${YELLOW}grego2d ${GREEN}and ${YELLOW}TzKet-Death ${GREEN}Selected${RESET}\n"
 			m_selection4="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/716459185230970880/718674249631662120/3d_coin_v2.patch
 		  	cd ../
 	      	git apply ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}3D Coin Patch v2 by grego2d and TzKet-Death Selected${RESET}\n"
+          	echo -e "$\n${GREEN}3D Coin Patch v2 by ${YELLOW}grego2d ${GREEN}and ${YELLOW}TzKet-Death ${GREEN}Selected${RESET}\n"
 		m_selection4="+"
           fi
           sleep 2
@@ -550,7 +544,7 @@ ${CYAN}Sound Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$s_selection1) Super Mario Sunshine Mario Voice by !!!! Kris The Goat | ${RED}Nightly Only, Needs
+1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${CYAN}| ${RED}Nightly Only, Needs
    External Resources${CYAN}
 C)ontinue
 
@@ -563,7 +557,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  #unrar x -o+ Sunshine_Mario_VO.rar
 		  #rm Sunshine_Mario_VO.rar
 		  wget https://cdn.discordapp.com/attachments/718584345912148100/719492399411232859/sunshinesounds.zip
-		  echo -e "$\n${GREEN}Super Mario Sunshine Mario Voice by !!!! Kris The Goat Selected${RESET}\n"
+		  echo -e "$\n${GREEN}Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${GREEN}Selected${RESET}\n"
 		  s_selection1="+"
 		  sleep 2
             ;;
@@ -587,8 +581,8 @@ ${CYAN}Texture Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$t_selection1) Hypatia´s Mario Craft 64 | ${RED}Nightly Only, Needs External Resources${RESET}
-${CYAN}2$t_selection2) Mollymutt's Texture Pack | ${RED}Nightly Only, Needs External Resources
+1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64 | ${RED}Nightly Only, Needs External Resources${RESET}
+${CYAN}2$t_selection2) ${YELLOW}Mollymutt${CYAN}'s Texture Pack | ${RED}Nightly Only, Needs External Resources
 ${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
@@ -602,7 +596,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           if [ ! -f Hypatia_Mario_Craft_Complete.part3.rar ]; then
           	echo -e "${RED}Your download fucked up"
           else
-          	echo -e "$\n${GREEN}Hypatia´s Mario Craft 64 Selected${RESET}\n"
+          	echo -e "$\n${YELLOW}Hypatia${GREEN}´s Mario Craft 64 Selected${RESET}\n"
 		t_selection1="+"
           fi
           sleep 2
@@ -611,7 +605,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           if [ ! -f mollymutt.zip ]; then
           	echo -e "${RED}Your download fucked up"
           else
-          	echo -e "$\n${GREEN}Mollymutt's Texture Pack Selected${RESET}\n"
+          	echo -e "$\n${YELLOW}Mollymutt${GREEN}'s Texture Pack Selected${RESET}\n"
 		t_selection2="+"
           fi
           sleep 2
@@ -637,6 +631,8 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$v_selection1) 120 Star Save | ${RED}Nightly Only${RESET}
+${CYAN}2$v_selection2) Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
+${CYAN}3$v_selection3) BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched cheats)
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -655,6 +651,34 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 		  v_selection1="+"
 		  sleep 2
             ;;
+    "2")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
+			git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+			v_selection2="+"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722566901749907496/0001-WIP-Enable-debug-level-selector.patch
+		  	cd ../
+	      	git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+		v_selection2="+"
+          fi
+          sleep 2
+            ;;
+    "3")  if [[ -f "./enhancements/blj_anywhere_cheat.patch" ]]; then
+			git apply ./enhancements/blj_anywhere_cheat.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}BLJ Anywhere by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
+			v_selection3="+"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722837419719786546/blj_anywhere_cheat.patch
+		  	cd ../
+	      	git apply ./enhancements/blj_anywhere_cheat.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}BLJ Anywhere by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
+		v_selection3="+"
+          fi
+          sleep 2
+            ;;
     "c")  break
             ;;
     "C")  echo "use lower case c!!"
@@ -666,71 +690,67 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     esac
 done
 			;;
-    "u")  while :
+        "f")  while :
 do
     clear
 	echo \
 "${YELLOW}==============================${RESET}
-${CYAN}Uninstall Patch Menu${RESET}
+${CYAN}Fixes Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$u_selection1) Uninstall 60 FPS Patch (Destroys Arredondo HD Mario Head, WIP)
-2$u_selection2) Uninstall 60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head,
-   WIP)
-3$u_selection3) Uninstall 3D Coin Patch v2 by grego2d and TzKet-Death
-4$u_selection4) Uninstall Don't Exit From Star Patch by Keanine
-5$u_selection5) Uninstall Mouse Support and Fixes for Reshade (WIP) by Funny unu boi
-6$u_selection6) Uninstall Enable Debug Level Selector (WIP) by Funny unu boi
-C)ontinue
+1$f_selection1) Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi
+${CYAN}2$f_selection2) Increase Delay on Star Select by ${YELLOW}GateGuy ${CYAN}| ${RED}Breaks TAS Support
+${CYAN}3$f_selection3) Go Back to Title Screen from Ending by ${YELLOW}GateGuy
+${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
-    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
-			git apply -R ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}60 FPS Patch (Destroys Arredondo HD Mario Head, WIP) Removed${RESET}\n"
-			u_selection1="+"
+    "1")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
+			git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+			f_selection1="+"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722662190267760660/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch
+		  	cd ../
+	      	git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+		f_selection1="+"
           fi
           sleep 2
             ;;
-    "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
-			git apply -R ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys Arredondo HD Mario Head, WIP) Removed${RESET}\n"
-			u_selection2="+"
-		  fi
-		  sleep 2
+    "2")  if [[ -f "./enhancements/increase_delay_on_star_select.patch" ]]; then
+			git apply ./enhancements/increase_delay_on_star_select.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Increase Delay on Star Select by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
+			f_selection2="+"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722874655723225109/increase_delay_on_star_select.patch
+		  	cd ../
+	      	git apply ./enhancements/increase_delay_on_star_select.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Increase Delay on Star Select by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
+		f_selection2="+"
+          fi
+          sleep 2
             ;;
-    "3")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
-			git apply -R ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}3D Coin Patch v2 by grego2d and TzKet-Death Removed${RESET}\n"
-			u_selection3="+"
-		  fi
-		  sleep 2
-		    ;;
-    "4")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
-			git apply -R ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Don't Exit From Star Patch by Keanine Removed${RESET}\n"
-			u_selection4="+"
-		  fi
-		  sleep 2
-		    ;;
-    "5")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
-			git apply -R ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by Funny unu boi Removed${RESET}\n"
-			u_selection5="+"
-		  fi
-		  sleep 2
-		    ;;
-    "6")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
-			git apply -R ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by Funny unu boi Removed${RESET}\n"
-			u_selection6="+"
-		  fi
-		  sleep 2
-		    ;;
+    "3")  if [[ -f "./enhancements/go_back_to_title_from_ending.patch" ]]; then
+			git apply ./enhancements/go_back_to_title_from_ending.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Go Back to Title Screen from Ending by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
+			f_selection3="+"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722875150923726928/go_back_to_title_from_ending.patch
+		  	cd ../
+	      	git apply ./enhancements/go_back_to_title_from_ending.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Go Back to Title Screen from Ending by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
+		f_selection3="+"
+          fi
+          sleep 2
+            ;;
     "c")  break
             ;;
     "C")  echo "use lower case c!!"
@@ -742,7 +762,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     esac
 done
 			;;
-    "i")  while :
+        "i")  while :
 do
     clear
 	echo \
@@ -752,7 +772,7 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1) Install Patches                    
-2) Install Texture Packs | ${RED}Nightly Only             
+2) Install Texture Packs | ${RED}Nightly Only, Needs External Resources
 ${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
@@ -773,6 +793,228 @@ ${RESET}${YELLOW}------------------------------${RESET}"
   		  echo -e "\n${GREEN}$TEXTURE_PACK selected${RESET}\n"
 		  sleep 2
             ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "u")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Uninstall Patch Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a letter to select:
+
+C)ontinue
+M)odels
+V)arious
+E)nhancements
+F)ixes
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+	read -n1 -s
+    case "$REPLY" in
+    "m")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Uninstall Models Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+1$m_u_selection1) Uninstall 3D Coin Patch v2 by ${YELLOW}grego2d ${CYAN}and ${YELLOW}TzKet-Death
+${CYAN}C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  if [[ -f "./enhancements/3d_coin_v2.patch" ]]; then
+			git apply -R ./enhancements/3d_coin_v2.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}3D Coin Patch v2 by ${YELLOW}grego2d ${GREEN}and ${YELLOW}TzKet-Death ${GREEN}Removed${RESET}\n"
+			m_u_selection1="+"
+		  fi
+		  sleep 2
+		    ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "v")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Uninstall Various Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+${CYAN}1$v_u_selection1) Uninstall Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
+${CYAN}2$v_u_selection2) Uninstall BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
+   cheats)
+${CYAN}C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
+			git apply -R ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi ${GREEN}Removed${RESET}\n"
+			v_u_selection1="+"
+		  fi
+		  sleep 2
+		    ;;
+    "2")  if [[ -f "./enhancements/blj_anywhere_cheat.patch" ]]; then
+			git apply -R ./enhancements/blj_anywhere_cheat.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}BLJ Anywhere by ${YELLOW}GateGuy ${GREEN}Removed${RESET}\n"
+			v_u_selection2="+"
+		  fi
+		  sleep 2
+		    ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "e")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Uninstall Enhancements Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+1$e_u_selection1) Uninstall 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP)
+2$e_u_selection2) Uninstall 60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head,
+   WIP)
+3$e_u_selection3) Uninstall Don't Exit From Star Patch by ${YELLOW}Keanine
+${CYAN}4$e_u_selection4) Uninstall Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other
+   patched cheats)
+${CYAN}C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
+			git apply -R ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Removed${RESET}\n"
+			e_u_selection1="+"
+          fi
+          sleep 2
+            ;;
+    "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
+			git apply -R ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Removed${RESET}\n"
+			e_u_selection2="+"
+		  fi
+		  sleep 2
+            ;;
+    "3")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
+			git apply -R ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Don't Exit From Star Patch by ${YELLOW}Keanine ${GREEN}Removed${RESET}\n"
+			e_u_selection3="+"
+		  fi
+		  sleep 2
+		    ;;
+    "4")  if [[ -f "./enhancements/stay_after_star_nonstop_mode_cheat.patch" ]]; then
+			git apply -R ./enhancements/stay_after_star_nonstop_mode_cheat.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Stay in Level After Star by ${YELLOW}GateGuy ${GREEN}Removed${RESET}\n"
+			e_u_selection4="+"
+		  fi
+		  sleep 2
+		    ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
+    "f")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Uninstall Fixes Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+${CYAN}1$f_u_selection1) Uninstall Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi
+${CYAN}2$f_u_selection2) Uninstall Increase Delay on Star Select by ${YELLOW}GateGuy ${CYAN}| ${RED}Breaks TAS Support
+${CYAN}3$f_u_selection3) Uninstall Go Back to Title Screen from Ending by ${YELLOW}GateGuy
+${CYAN}C)ontinue
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
+			git apply -R ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi ${GREEN}Removed${RESET}\n"
+			f_u_selection1="+"
+		  fi
+		  sleep 2
+		    ;;
+    "2")  if [[ -f "./enhancements/increase_delay_on_star_select.patch" ]]; then
+			git apply -R ./enhancements/increase_delay_on_star_select.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Increase Delay on Star Select by ${YELLOW}GateGuy ${GREEN}Removed${RESET}\n"
+			f_u_selection2="+"
+		  fi
+		  sleep 2
+		    ;;
+    "3")  if [[ -f "./enhancements/go_back_to_title_from_ending.patch" ]]; then
+			git apply -R ./enhancements/go_back_to_title_from_ending.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Go Back to Title Screen from Ending by ${YELLOW}GateGuy ${GREEN}Removed${RESET}\n"
+			f_u_selection3="+"
+		  fi
+		  sleep 2
+		    ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
     "c")  break
             ;;
     "C")  echo "use lower case c!!"
