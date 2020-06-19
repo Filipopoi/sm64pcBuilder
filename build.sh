@@ -5,25 +5,32 @@ LIBDIR=./tools/lib/
 LIBAFA=libaudiofile.a
 LIBAFLA=libaudiofile.la
 AUDDIR=./tools/audiofile-0.3.6
+OFFICIAL=./sm64-port/
+OFFICIAL_GIT=./sm64-port/.git/
+OFFICIAL_OLD=./sm64-port.old/baserom.us.z64
 MASTER=./sm64pc-master/
 MASTER_GIT=./sm64pc-master/.git/
 MASTER_OLD=./sm64pc-master.old/baserom.us.z64
 NIGHTLY=./sm64pc-nightly/
 NIGHTLY_GIT=./sm64pc-nightly/.git/
-ROM_CHECK=./baserom.us.z64
 NIGHTLY_OLD=./sm64pc-nightly.old/baserom.us.z64
+ROM_CHECK=./baserom.us.z64
 BINARY=./build/us_pc/sm64*
 FOLDER_PLACEMENT=C:/sm64pcBuilder
 MACHINE_TYPE=`uname -m`
 
 # Command line options
+OFFICIAL_OPTIONS=("Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "Build an N64 ROM" "Clean build | This deletes the build folder")
+OFFICIAL_EXTRA=("VERSION=jp" "VERSION=eu" "TARGET_N64=1" "clean")
 MASTER_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Remove Extended Options Menu | Remove additional R button menu options" "Clean build | This deletes the build folder")
 MASTER_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXT_OPTIONS_MENU=0" "clean")
 NIGHTLY_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
 NIGHTLY_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "VERSION=jp" "VERSION=eu" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
 
 # Extra dependency checks
-DEPENDENCIES=("make" "git" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2")
+DEPENDENCIES_OFFICIAL_64=("git" "make" "python3" "mingw-w64-x86_64-gcc")
+DEPENDENCIES_OFFICIAL_32=("git" "make" "python3" "mingw-w64-i686-gcc")
+DEPENDENCIES_UNOFFICIAL=("git" "make" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2")
 
 # Colors
 RED=$(tput setaf 1)
@@ -62,39 +69,6 @@ if [ -d "C:/Program Files/Kaspersky Lab/" ] || [ -d "C:/Program Files (x86)/Kasp
 	sleep 3
 fi
 
-# Checks for common required executables (make, git) and installs everything if they are missing
-if  [[ ! $(command -v make) || ! $(command -v git) ]]; then
-	echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
-	pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
-                    git subversion mercurial \
-                    mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
-    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 zip curl --noconfirm
-	pacman -Syuu --noconfirm
-fi
-
-# Checks for some dependencies again
-echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
-for i in ${DEPENDENCIES[@]}; do
-	if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
-		pacman -S $i --noconfirm
-	fi
-done
-
-if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
-	wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
-fi
-
-echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
-
-# Delete their setup or old shit
-if [ -f $HOME/build-setup.sh ]; then
-	rm $HOME/build-setup.sh
-fi
-
-if [ -f $HOME/build.sh ]; then
-	rm $HOME/build.sh
-fi
-
 # Update sm64pcbuilder check
 pull_sm64pcbuilder () {
 	echo -e "\n${YELLOW}Downloading available build.sh updates...${RESET}\n"
@@ -107,37 +81,91 @@ pull_sm64pcbuilder () {
 	exec ./build.sh "$@"
 }
 
-[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RESET}" || pull_sm64pcbuilder "$@"
-
-# Update message
-if [ "$3" = showchangelog ]; then
+# Check for build updates and show changelog if there are
+build_update_changelog () {
+	[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+	sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RESET}" || pull_sm64pcbuilder "$@"
+	# Update message
+	if [ "$3" = showchangelog ]; then
 	zenity --info  --text "
-SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds, BrineDude, Recompiler, and others)
-------------------------------
-Updates:
+	SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds, BrineDude, Recompiler, and others)
+	------------------------------
+	Updates:
 
-- Use noupdate After ./build.sh Or -j
-  To Skip Updating Master Or Nightly
-- Mouse Support and Fixes for Reshade
-  (WIP) by Funny unu boi
-- Enable Debug Level Selector (WIP)
-  by Funny unu boi
-- Selected Add-ons Now Marked With
-  a + Sign
-- Stay in Level After Star, BLJ
-  Anywhere, Increase Delay on Star
-  Select, Go Back to Title Screen from
-  Ending by GateGuy
-- Fixes Submenu
-- Uninstall Submenus
-- New Add-ons Colors
+	- Official Port Support
+	- Fixed BLJ Anywhere by GateGuy
 
-------------------------------
-build.sh Update 20.1"
-fi
+	------------------------------
+	build.sh Update 21"
+	fi
+}
+
+# Checks for official x64 dependencies
+depcheck_official () {
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+		echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
+		for i in ${DEPENDENCIES_OFFICIAL_64[@]}; do
+			if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
+				pacman -Syu --noconfirm
+				pacman -Su --noconfirm
+				pacman -S $i --noconfirm
+				pacman -Syuu --noconfirm
+			fi
+		done
+	else
+		for i in ${DEPENDENCIES_OFFICIAL_32[@]}; do
+			if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
+				pacman -Syu --noconfirm
+				pacman -Su --noconfirm
+				pacman -S $i --noconfirm
+				pacman -Syuu --noconfirm
+			fi
+		done
+	fi
+
+	if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
+		wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
+	fi
+
+	echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
+}
+
+depcheck_unofficial () {
+	# Checks for common required executables (make, git) and installs everything if they are missing
+	if  [[ ! $(command -v make) || ! $(command -v git) ]]; then
+		echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
+		pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
+	                    git subversion mercurial \
+	                    mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
+	    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 zip curl --noconfirm
+		pacman -Syuu --noconfirm
+	fi
+
+	# Checks for some dependencies again
+	echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
+	for i in ${DEPENDENCIES_UNOFFICIAL[@]}; do
+		if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
+			pacman -S $i --noconfirm
+		fi
+	done
+
+	if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
+		wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
+	fi
+
+	echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
+}
 
 # Gives options to download from GitHub
+
+# Update official check
+pull_official () {
+	echo -e "\n${YELLOW}Downloading available sm64-port updates...${RESET}\n"
+	git stash push
+	git stash drop
+	git pull
+	sleep 2
+}
 
 # Update master check
 pull_master () {
@@ -159,69 +187,129 @@ pull_nightly () {
 
 if [ "$1" = noupdate ] || [ "$2" = noupdate ]; then
 	zenity --question  --text "Which version are you compiling?
+The official version's code is cleaner, but
+it lacks the new features of the unofficial
+version at the moment.
+Automatic updates are disabled." \
+	--ok-label="Official" \
+	--cancel-label="Unofficial"
+	if [[ $? = 0 ]]; then
+		depcheck_official "$@"
+		build_update_changelog "$@"
+		I_Want_Official=true
+	else
+		depcheck_unofficial "$@"
+		build_update_changelog "$@"
+		zenity --question  --text "Which version are you compiling?
 The nightly version is currently recommended.
 Automatic updates are disabled." \
-	--ok-label="Master" \
-	--cancel-label="Nightly"
-	if [[ $? = 0 ]]; then
-	  I_Want_Master=true
-	else
-	  I_Want_Nightly=true
+		--ok-label="Master" \
+		--cancel-label="Nightly"
+		if [[ $? = 0 ]]; then
+		  I_Want_Master=true
+		else
+		  I_Want_Nightly=true
+		fi
 	fi
 else
 	zenity --question  --text "Which version are you compiling?
-The nightly version is currently recommended.
+The official version's code is cleaner, but
+it lacks the new features of the unofficial
+version at the moment.
 Automatic updates are enabled." \
-	--ok-label="Master" \
-	--cancel-label="Nightly"
+	--ok-label="Official" \
+	--cancel-label="Unofficial"
 	if [[ $? = 0 ]]; then
-		if [ -d "$MASTER_GIT" ]; then
-			cd ./sm64pc-master
+		depcheck_official "$@"
+		build_update_changelog "$@"
+		if [ -d "$OFFICIAL_GIT" ]; then
+			cd ./sm64-port
 			echo -e "\n"
 			[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-			sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-master is up to date\n${RESET}" || pull_master "$@"
+			sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64-port is up to date\n${RESET}" || pull_official "$@"
 			if [ -f ./build.sh ]; then
 				rm ./build.sh
 			fi
-			I_Want_Master=true
+			I_Want_Official=true
 			cd ../
 		else
-			if [ -d "$MASTER" ]; then
-				mv sm64pc-master sm64pc-master.old
+			if [ -d "$OFFICIAL" ]; then
+				mv sm64-port sm64-port.old
 			fi
 			echo -e "\n"
-			git clone git://github.com/sm64pc/sm64pc sm64pc-master
-			I_Want_Master=true
+			git clone https://github.com/sm64-port/sm64-port.git
+			I_Want_Official=true
 		fi
-	elif [ -d "$NIGHTLY_GIT" ]; then
-		cd ./sm64pc-nightly
-		echo -e "\n"
-		[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-		sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-nightly is up to date\n${RESET}" || pull_nightly "$@"
-		if [ -f ./build.sh ]; then
-			rm ./build.sh
-		fi
-		I_Want_Nightly=true
-		cd ../
-		elif [ -d "$NIGHTLY" ]; then
+	else
+		depcheck_unofficial "$@"
+		build_update_changelog "$@"
+		zenity --question  --text "Which version are you compiling?
+The nightly version is currently recommended.
+Automatic updates are enabled." \
+		--ok-label="Master" \
+		--cancel-label="Nightly"
+		if [[ $? = 0 ]]; then
+			if [ -d "$MASTER_GIT" ]; then
+				cd ./sm64pc-master
+				echo -e "\n"
+				[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+				sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-master is up to date\n${RESET}" || pull_master "$@"
+				if [ -f ./build.sh ]; then
+					rm ./build.sh
+				fi
+				I_Want_Master=true
+				cd ../
+			else
+				if [ -d "$MASTER" ]; then
+					mv sm64pc-master sm64pc-master.old
+				fi
+				echo -e "\n"
+				git clone git://github.com/sm64pc/sm64pc sm64pc-master
+				I_Want_Master=true
+			fi
+		elif [ -d "$NIGHTLY_GIT" ]; then
+			cd ./sm64pc-nightly
 			echo -e "\n"
-			mv sm64pc-nightly sm64pc-nightly.old
-			git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
-			if [ -f ./sm64pc-nightly/build.sh ]; then
-				rm ./sm64pc-nightly/build.sh
+			[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+			sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-nightly is up to date\n${RESET}" || pull_nightly "$@"
+			if [ -f ./build.sh ]; then
+				rm ./build.sh
 			fi
 			I_Want_Nightly=true
-		else
-			echo -e "\n"
-			git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
-			if [ -f ./sm64pc-nightly/build.sh ]; then
-				rm ./sm64pc-nightly/build.sh
-			fi
-			I_Want_Nightly=true
+			cd ../
+			elif [ -d "$NIGHTLY" ]; then
+				echo -e "\n"
+				mv sm64pc-nightly sm64pc-nightly.old
+				git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
+				if [ -f ./sm64pc-nightly/build.sh ]; then
+					rm ./sm64pc-nightly/build.sh
+				fi
+				I_Want_Nightly=true
+			else
+				echo -e "\n"
+				git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
+				if [ -f ./sm64pc-nightly/build.sh ]; then
+					rm ./sm64pc-nightly/build.sh
+				fi
+				I_Want_Nightly=true
+		fi
 	fi
 fi
 
+# Delete their setup or old shit
+if [ -f $HOME/build-setup.sh ]; then
+	rm $HOME/build-setup.sh
+fi
+
+if [ -f $HOME/build.sh ]; then
+	rm $HOME/build.sh
+fi
+
 # Checks for a pre-existing baserom file in old folder then moves it to the new one
+if [ -f "$OFFICIAL_OLD" ]; then
+    mv sm64-port.old/baserom.us.z64 sm64-port/baserom.us.z64
+fi
+
 if [ -f "$MASTER_OLD" ]; then
     mv sm64pc-master.old/baserom.us.z64 sm64pc-master/baserom.us.z64
 fi
@@ -231,6 +319,17 @@ if [ -f "$NIGHTLY_OLD" ]; then
 fi
 
 # Checks for which version the user selected & if baserom exists
+if [ "$I_Want_Official" = true ]; then
+    cd ./sm64-port
+    if [ -f "$ROM_CHECK" ]; then
+    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+    else
+    	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
+    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
+    	cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.us.z64
+	fi
+fi
+
 if [ "$I_Want_Master" = true ]; then
     cd ./sm64pc-master
     if [ -f "$ROM_CHECK" ]; then
@@ -312,6 +411,7 @@ elif [ "$I_Want_Master" = true ]; then
 fi
 
 # Add-ons Menu
+if [ "$I_Want_Master" = true ] || [ "$I_Want_Nightly" = true ]; then
 while :
 do
     clear
@@ -671,7 +771,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 			v_selection3="+"
 		  else
 			cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722837419719786546/blj_anywhere_cheat.patch
+		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722949729394098236/blj_anywhere_cheat.patch
 		  	cd ../
 	      	git apply ./enhancements/blj_anywhere_cheat.patch --ignore-whitespace --reject
           	echo -e "$\n${GREEN}BLJ Anywhere by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
@@ -1036,6 +1136,36 @@ done
             ;;
     esac
 done
+fi
+
+# Official flags menu
+if [ "$I_Want_Official" = true ]; then
+	menu() {
+			printf "\nAvailable options:\n"
+			for i in ${!OFFICIAL_OPTIONS[@]}; do 
+					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${OFFICIAL_OPTIONS[i]}"
+			done
+			if [[ "$msg" ]]; then echo "$msg"; fi
+			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
+			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
+			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
+			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
+			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64-port/build\n"
+	}
+
+	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
+	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
+			[[ "$num" != *[![:digit:]]* ]] &&
+			(( num > 0 && num <= ${#OFFICIAL_OPTIONS[@]} )) ||
+			{ msg="Invalid option: $num"; continue; }
+			((num--)); # msg="${OFFICIAL_OPTIONS[num]} was ${choices[num]:+un}checked"
+			[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
+	done
+
+	for i in ${!OFFICIAL_OPTIONS[@]}; do 
+			[[ "${choices[i]}" ]] && { CMDL+=" ${OFFICIAL_EXTRA[i]}"; }
+	done
+fi
 
 # Master flags menu
 if [ "$I_Want_Master" = true ]; then
@@ -1049,7 +1179,7 @@ if [ "$I_Want_Master" = true ]; then
 			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
 			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
 			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
-			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-master/build or sm64pc-nightly/build\n"
+			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-master/build\n"
 			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
 	}
 
@@ -1079,7 +1209,7 @@ if [ "$I_Want_Nightly" = true ]; then
 			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
 			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
 			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
-			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-master/build or sm64pc-nightly/build\n"
+			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-nightly/build\n"
 			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
 	}
 
