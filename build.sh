@@ -8,13 +8,15 @@ AUDDIR=./tools/audiofile-0.3.6
 OFFICIAL=./sm64-port/
 OFFICIAL_GIT=./sm64-port/.git/
 OFFICIAL_OLD=./sm64-port.old/baserom.us.z64
-MASTER=./sm64pc-master/
-MASTER_GIT=./sm64pc-master/.git/
-MASTER_OLD=./sm64pc-master.old/baserom.us.z64
-NIGHTLY=./sm64pc-nightly/
-NIGHTLY_GIT=./sm64pc-nightly/.git/
-NIGHTLY_OLD=./sm64pc-nightly.old/baserom.us.z64
-ROM_CHECK=./baserom.us.z64
+MASTER=./sm64ex-master/
+MASTER_GIT=./sm64ex-master/.git/
+MASTER_OLD=./sm64ex-master.old/baserom.us.z64
+NIGHTLY=./sm64ex-nightly/
+NIGHTLY_GIT=./sm64ex-nightly/.git/
+NIGHTLY_OLD=./sm64ex-nightly.old/baserom.us.z64
+ROM_CHECK_US=./baserom.us.z64
+ROM_CHECK_JP=./baserom.jp.z64
+ROM_CHECK_EU=./baserom.eu.z64
 BINARY=./build/us_pc/sm64*
 FOLDER_PLACEMENT=C:/sm64pcBuilder
 MACHINE_TYPE=`uname -m`
@@ -28,9 +30,7 @@ NIGHTLY_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow Exter
 NIGHTLY_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "VERSION=jp" "VERSION=eu" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
 
 # Extra dependency checks
-DEPENDENCIES_OFFICIAL_64=("git" "make" "python3" "mingw-w64-x86_64-gcc")
-DEPENDENCIES_OFFICIAL_32=("git" "make" "python3" "mingw-w64-i686-gcc")
-DEPENDENCIES_UNOFFICIAL=("git" "make" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2")
+DEPENDENCIES=("git" "make" "python3" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2" "mingw-w64-i686-python-xdg" "mingw-w64-x86_64-python-xdg")
 
 # Colors
 RED=$(tput setaf 1)
@@ -69,6 +69,39 @@ if [ -d "C:/Program Files/Kaspersky Lab/" ] || [ -d "C:/Program Files (x86)/Kasp
 	sleep 3
 fi
 
+# Checks for common required executables (make, git) and installs everything if they are missing
+if  [[ ! $(command -v make) || ! $(command -v git) ]]; then
+	echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
+	pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
+                    git subversion mercurial \
+                    mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
+    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 zip curl --noconfirm
+	pacman -Syuu --noconfirm
+fi
+
+# Checks for some dependencies again
+echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
+for i in ${DEPENDENCIES[@]}; do
+	if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
+		pacman -S $i --noconfirm
+	fi
+done
+
+if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
+	wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
+fi
+
+echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
+
+# Delete their setup or old shit
+if [ -f $HOME/build-setup.sh ]; then
+	rm $HOME/build-setup.sh
+fi
+
+if [ -f $HOME/build.sh ]; then
+	rm $HOME/build.sh
+fi
+
 # Update sm64pcbuilder check
 pull_sm64pcbuilder () {
 	echo -e "\n${YELLOW}Downloading available build.sh updates...${RESET}\n"
@@ -81,80 +114,30 @@ pull_sm64pcbuilder () {
 	exec ./build.sh "$@"
 }
 
-# Check for build updates and show changelog if there are
-build_update_changelog () {
-	[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-	sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RESET}" || pull_sm64pcbuilder "$@"
-	# Update message
-	if [ "$3" = showchangelog ]; then
+[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
+sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RESET}" || pull_sm64pcbuilder "$@"
+
+# Update message
+if [ "$3" = showchangelog ]; then
 	zenity --info  --text "
-	SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds, BrineDude, Recompiler, and others)
-	------------------------------
-	Updates:
+SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds, BrineDude, Recompiler, and others)
+------------------------------
+Updates:
 
-	- Official Port Support
-	- Fixed BLJ Anywhere by GateGuy
+- Official Port Support
+- Fixed BLJ Anywhere by GateGuy
+- JP and EU Baserom File
+  Selection
+- EXE Location Region Detection
+  ('build/us_pc/' 'build/jp_pc/'
+   'build/eu_pc/')
+- Renamed Unofficial Repo to
+  sm64ex (look for your exe in
+  this folder)
 
-	------------------------------
-	build.sh Update 21"
-	fi
-}
-
-# Checks for official x64 dependencies
-depcheck_official () {
-	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-		echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
-		for i in ${DEPENDENCIES_OFFICIAL_64[@]}; do
-			if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
-				pacman -Syu --noconfirm
-				pacman -Su --noconfirm
-				pacman -S $i --noconfirm
-				pacman -Syuu --noconfirm
-			fi
-		done
-	else
-		for i in ${DEPENDENCIES_OFFICIAL_32[@]}; do
-			if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
-				pacman -Syu --noconfirm
-				pacman -Su --noconfirm
-				pacman -S $i --noconfirm
-				pacman -Syuu --noconfirm
-			fi
-		done
-	fi
-
-	if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
-		wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
-	fi
-
-	echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
-}
-
-depcheck_unofficial () {
-	# Checks for common required executables (make, git) and installs everything if they are missing
-	if  [[ ! $(command -v make) || ! $(command -v git) ]]; then
-		echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
-		pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
-	                    git subversion mercurial \
-	                    mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
-	    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 zip curl --noconfirm
-		pacman -Syuu --noconfirm
-	fi
-
-	# Checks for some dependencies again
-	echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
-	for i in ${DEPENDENCIES_UNOFFICIAL[@]}; do
-		if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
-			pacman -S $i --noconfirm
-		fi
-	done
-
-	if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
-		wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
-	fi
-
-	echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
-}
+------------------------------
+build.sh Update 21.1"
+fi
 
 # Gives options to download from GitHub
 
@@ -169,7 +152,7 @@ pull_official () {
 
 # Update master check
 pull_master () {
-	echo -e "\n${YELLOW}Downloading available sm64pc-master updates...${RESET}\n"
+	echo -e "\n${YELLOW}Downloading available sm64ex-master updates...${RESET}\n"
 	git stash push
 	git stash drop
 	git pull
@@ -178,7 +161,7 @@ pull_master () {
 
 # Update nightly check
 pull_nightly () {
-	echo -e "\n${YELLOW}Downloading available sm64pc-nightly updates...${RESET}\n"
+	echo -e "\n${YELLOW}Downloading available sm64ex-nightly updates...${RESET}\n"
 	git stash push
 	git stash drop
 	git pull
@@ -194,12 +177,8 @@ Automatic updates are disabled." \
 	--ok-label="Official" \
 	--cancel-label="Unofficial"
 	if [[ $? = 0 ]]; then
-		depcheck_official "$@"
-		build_update_changelog "$@"
 		I_Want_Official=true
 	else
-		depcheck_unofficial "$@"
-		build_update_changelog "$@"
 		zenity --question  --text "Which version are you compiling?
 The nightly version is currently recommended.
 Automatic updates are disabled." \
@@ -220,8 +199,6 @@ Automatic updates are enabled." \
 	--ok-label="Official" \
 	--cancel-label="Unofficial"
 	if [[ $? = 0 ]]; then
-		depcheck_official "$@"
-		build_update_changelog "$@"
 		if [ -d "$OFFICIAL_GIT" ]; then
 			cd ./sm64-port
 			echo -e "\n"
@@ -241,8 +218,6 @@ Automatic updates are enabled." \
 			I_Want_Official=true
 		fi
 	else
-		depcheck_unofficial "$@"
-		build_update_changelog "$@"
 		zenity --question  --text "Which version are you compiling?
 The nightly version is currently recommended.
 Automatic updates are enabled." \
@@ -250,10 +225,10 @@ Automatic updates are enabled." \
 		--cancel-label="Nightly"
 		if [[ $? = 0 ]]; then
 			if [ -d "$MASTER_GIT" ]; then
-				cd ./sm64pc-master
+				cd ./sm64ex-master
 				echo -e "\n"
 				[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-				sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-master is up to date\n${RESET}" || pull_master "$@"
+				sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64ex-master is up to date\n${RESET}" || pull_master "$@"
 				if [ -f ./build.sh ]; then
 					rm ./build.sh
 				fi
@@ -261,17 +236,17 @@ Automatic updates are enabled." \
 				cd ../
 			else
 				if [ -d "$MASTER" ]; then
-					mv sm64pc-master sm64pc-master.old
+					mv sm64ex-master sm64ex-master.old
 				fi
 				echo -e "\n"
-				git clone git://github.com/sm64pc/sm64pc sm64pc-master
+				git clone git://github.com/sm64pc/sm64ex sm64ex-master
 				I_Want_Master=true
 			fi
 		elif [ -d "$NIGHTLY_GIT" ]; then
-			cd ./sm64pc-nightly
+			cd ./sm64ex-nightly
 			echo -e "\n"
 			[ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | \
-			sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64pc-nightly is up to date\n${RESET}" || pull_nightly "$@"
+			sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}sm64ex-nightly is up to date\n${RESET}" || pull_nightly "$@"
 			if [ -f ./build.sh ]; then
 				rm ./build.sh
 			fi
@@ -279,30 +254,21 @@ Automatic updates are enabled." \
 			cd ../
 			elif [ -d "$NIGHTLY" ]; then
 				echo -e "\n"
-				mv sm64pc-nightly sm64pc-nightly.old
-				git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
-				if [ -f ./sm64pc-nightly/build.sh ]; then
-					rm ./sm64pc-nightly/build.sh
+				mv sm64ex-nightly sm64ex-nightly.old
+				git clone -b nightly git://github.com/sm64pc/sm64ex sm64ex-nightly
+				if [ -f ./sm64ex-nightly/build.sh ]; then
+					rm ./sm64ex-nightly/build.sh
 				fi
 				I_Want_Nightly=true
 			else
 				echo -e "\n"
-				git clone -b nightly git://github.com/sm64pc/sm64pc sm64pc-nightly
-				if [ -f ./sm64pc-nightly/build.sh ]; then
-					rm ./sm64pc-nightly/build.sh
+				git clone -b nightly git://github.com/sm64pc/sm64ex sm64ex-nightly
+				if [ -f ./sm64ex-nightly/build.sh ]; then
+					rm ./sm64ex-nightly/build.sh
 				fi
 				I_Want_Nightly=true
 		fi
 	fi
-fi
-
-# Delete their setup or old shit
-if [ -f $HOME/build-setup.sh ]; then
-	rm $HOME/build-setup.sh
-fi
-
-if [ -f $HOME/build.sh ]; then
-	rm $HOME/build.sh
 fi
 
 # Checks for a pre-existing baserom file in old folder then moves it to the new one
@@ -311,44 +277,89 @@ if [ -f "$OFFICIAL_OLD" ]; then
 fi
 
 if [ -f "$MASTER_OLD" ]; then
-    mv sm64pc-master.old/baserom.us.z64 sm64pc-master/baserom.us.z64
+    mv sm64ex-master.old/baserom.us.z64 sm64ex-master/baserom.us.z64
 fi
 
 if [ -f "$NIGHTLY_OLD" ]; then
-    mv sm64pc-nightly.old/baserom.us.z64 sm64pc-nightly/baserom.us.z64
+    mv sm64ex-nightly.old/baserom.us.z64 sm64ex-nightly/baserom.us.z64
 fi
 
 # Checks for which version the user selected & if baserom exists
 if [ "$I_Want_Official" = true ]; then
     cd ./sm64-port
-    if [ -f "$ROM_CHECK" ]; then
+    if [ -f "$ROM_CHECK_US" ] || [ -f "$ROM_CHECK_JP" ]; then
+    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+    elif [ -f "$ROM_CHECK_EU" ]; then
     	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
-    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
-    	cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.us.z64
+    	echo -e "\n${YELLOW}Select your baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)${RESET}\n"
+    	while true; do
+    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)")
+		if [[ "$BASEROM_FILE" = *baserom.us.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.us.z64
+		elif [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.jp.z64
+		elif [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.eu.z64
+		else
+			zenity --warning \
+			--text="This is not an appropriate baserom file. Make sure it's named baserom.<VERSION>.z64, where VERSION can either be us, jp, or eu. Renaming n64 or v64 to z64 won't work."
+			continue
+		fi
+		break
+		done
 	fi
 fi
 
 if [ "$I_Want_Master" = true ]; then
-    cd ./sm64pc-master
-    if [ -f "$ROM_CHECK" ]; then
+    cd ./sm64ex-master
+    if [ -f "$ROM_CHECK_US" ] || [ -f "$ROM_CHECK_JP" ]; then
+    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+    elif [ -f "$ROM_CHECK_EU" ]; then
     	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
-    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
-    	cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64pc-master/baserom.us.z64
+    	echo -e "\n${YELLOW}Select your baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)${RESET}\n"
+    	while true; do
+    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)")
+		if [[ "$BASEROM_FILE" = *baserom.us.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-master/baserom.us.z64
+		elif [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-master/baserom.jp.z64
+		elif [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-master/baserom.eu.z64
+		else
+			zenity --warning \
+			--text="This is not an appropriate baserom file. Make sure it's named baserom.<VERSION>.z64, where VERSION can either be us, jp, or eu. Renaming n64 or v64 to z64 won't work."
+			continue
+		fi
+		break
+		done
 	fi
 fi
 
 if [ "$I_Want_Nightly" = true ]; then
-    cd ./sm64pc-nightly
-    if [ -f "$ROM_CHECK" ]; then
+    cd ./sm64ex-nightly
+    if [ -f "$ROM_CHECK_US" ] || [ -f "$ROM_CHECK_JP" ]; then
+    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+    elif [ -f "$ROM_CHECK_EU" ]; then
     	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
     else
-    	echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
-    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
-    	cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64pc-nightly/baserom.us.z64
+    	echo -e "\n${YELLOW}Select your baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)${RESET}\n"
+    	while true; do
+    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)")
+		if [[ "$BASEROM_FILE" = *baserom.us.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-nightly/baserom.us.z64
+		elif [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-nightly/baserom.jp.z64
+		elif [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
+			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-nightly/baserom.eu.z64
+		else
+			zenity --warning \
+			--text="This is not an appropriate baserom file. Make sure it's named baserom.<VERSION>.z64, where VERSION can either be us, jp, or eu. Renaming n64 or v64 to z64 won't work."
+			continue
+		fi
+		break
+		done
 	fi
 fi
 
@@ -1149,8 +1160,7 @@ if [ "$I_Want_Official" = true ]; then
 			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
 			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
 			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
-			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
-			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64-port/build\n"
+			printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64-port/build\n${RESET}"
 	}
 
 	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
@@ -1178,8 +1188,7 @@ if [ "$I_Want_Master" = true ]; then
 			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
 			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
 			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
-			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
-			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-master/build\n"
+			printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64ex-master/build\n"
 			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
 	}
 
@@ -1208,8 +1217,7 @@ if [ "$I_Want_Nightly" = true ]; then
 			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
 			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
 			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
-			printf "${RED}RUN \"Clean build\" REGULARLY.\n"
-			printf "Every time you want to update to a newer version or build with different options\nyou have to choose the option \"Clean build\" or manually remove or rename\nsm64pc-nightly/build\n"
+			printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64ex-nightly/build\n"
 			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
 	}
 
@@ -1268,10 +1276,23 @@ if [ "${CMDL}" != " clean" ]; then
 			fi
 		fi
 		
-    	zenity --info \
-		--text="The sm64pc binary is now available in the 'build/us_pc/' folder."
-		echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
-		cd ./build/us_pc/
+		# Checks binary region and shows the correct location
+		if [ "${CMDL}" = " VERSION=us" ]; then
+	    	zenity --info \
+			--text="The binary is now available in the 'build/us_pc/' folder."
+			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+			cd ./build/us_pc/
+		elif [ "${CMDL}" = " VERSION=jp" ]; then
+	    	zenity --info \
+			--text="The binary is now available in the 'build/jp_pc/' folder."
+			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+			cd ./build/jp_pc/
+		elif [ "${CMDL}" = " VERSION=eu" ]; then
+	    	zenity --info \
+			--text="The binary is now available in the 'build/eu_pc/' folder."
+			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+			cd ./build/eu_pc/
+		fi
 		start .
 	else
 		zenity --warning \
