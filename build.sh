@@ -24,10 +24,8 @@ MACHINE_TYPE=`uname -m`
 # Command line options
 OFFICIAL_OPTIONS=("Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "Build an N64 ROM" "Clean build | This deletes the build folder")
 OFFICIAL_EXTRA=("VERSION=jp" "VERSION=eu" "TARGET_N64=1" "clean")
-MASTER_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Remove Extended Options Menu | Remove additional R button menu options" "Clean build | This deletes the build folder")
-MASTER_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXT_OPTIONS_MENU=0" "clean")
-NIGHTLY_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
-NIGHTLY_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "VERSION=jp" "VERSION=eu" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
+UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
+UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "VERSION=jp" "VERSION=eu" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
 
 # Extra dependency checks
 DEPENDENCIES=("git" "make" "python3" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2" "mingw-w64-i686-python-xdg" "mingw-w64-x86_64-python-xdg")
@@ -371,54 +369,6 @@ fi
 # Checks to see if the libaudio directory and files exist
 if [ -d "${LIBDIR}" -a -e "${LIBDIR}${LIBAFA}" -a -e "${LIBDIR}${LIBAFLA}"  ]; then
     echo -e "\n${GREEN}libaudio files exist, going straight to compiling.${RESET}\n"
-elif [ "$I_Want_Master" = true ]; then
-	echo -e "\n${GREEN}libaudio files not found, starting initialization process.${RESET}\n\n"
-
-    echo -e "${YELLOW} Changing directory to: ${CYAN}${AUDDIR}${RESET}\n\n"
-	cd $AUDDIR
-
-    echo -e "${YELLOW} Executing: ${CYAN}autoreconf -i${RESET}\n\n"
-	autoreconf -i
-
-	echo -e "\n${YELLOW} Executing: ${CYAN}./configure --disable-docs${RESET}\n\n"
-
-	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-	  PATH=/mingw64/bin:/mingw32/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
-	else
-	  PATH=/mingw32/bin:$PATH LIBS=-lstdc++ ./configure --disable-docs
-	fi
-
-	echo -e "\n${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
-
-	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
-	else
-	  PATH=/mingw32/bin:$PATH make $1
-	fi
-
-    echo -e "\n${YELLOW} Making new directory ${CYAN}../lib${RESET}\n\n"
-	mkdir ../lib
-
-    echo -e "${YELLOW} Copying libaudio files to ${CYAN}../lib${RESET}\n\n"
-	cp libaudiofile/.libs/libaudiofile.a ../lib/
-	cp libaudiofile/.libs/libaudiofile.la ../lib/
-
-    echo -e "${YELLOW} Going up one directory.${RESET}\n\n"
-	cd ../
-
-	sed -i 's/tabledesign_CFLAGS := -Wno-uninitialized -laudiofile/tabledesign_CFLAGS := -Wno-uninitialized -laudiofile -lstdc++/g' Makefile
-
-	# Checks the computer architecture
-	echo -e "${YELLOW} Executing: ${CYAN}make $1${RESET}\n\n"
-
-	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $1
-	else
-	  PATH=/mingw32/bin:$PATH make $1
-	fi
-
-    echo -e "\n${YELLOW} Going up one directory.${RESET}\n"
-		cd ../
 fi
 
 # Add-ons Menu
@@ -1177,12 +1127,12 @@ if [ "$I_Want_Official" = true ]; then
 	done
 fi
 
-# Master flags menu
-if [ "$I_Want_Master" = true ]; then
+# Unofficial flags menu
+if [ "$I_Want_Master" = true ] || [ "$I_Want_Nightly" = true ]; then
 	menu() {
 			printf "\nAvailable options:\n"
-			for i in ${!MASTER_OPTIONS[@]}; do 
-					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${MASTER_OPTIONS[i]}"
+			for i in ${!UNOFFICIAL_OPTIONS[@]}; do 
+					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${UNOFFICIAL_OPTIONS[i]}"
 			done
 			if [[ "$msg" ]]; then echo "$msg"; fi
 			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
@@ -1195,43 +1145,14 @@ if [ "$I_Want_Master" = true ]; then
 	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
 	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
 			[[ "$num" != *[![:digit:]]* ]] &&
-			(( num > 0 && num <= ${#MASTER_OPTIONS[@]} )) ||
+			(( num > 0 && num <= ${#UNOFFICIAL_OPTIONS[@]} )) ||
 			{ msg="Invalid option: $num"; continue; }
-			((num--)); # msg="${MASTER_OPTIONS[num]} was ${choices[num]:+un}checked"
+			((num--)); # msg="${UNOFFICIAL_OPTIONS[num]} was ${choices[num]:+un}checked"
 			[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
 	done
 
-	for i in ${!MASTER_OPTIONS[@]}; do 
-			[[ "${choices[i]}" ]] && { CMDL+=" ${MASTER_EXTRA[i]}"; }
-	done
-fi
-
-# Nightly flags menu
-if [ "$I_Want_Nightly" = true ]; then
-	menu() {
-			printf "\nAvailable options:\n"
-			for i in ${!NIGHTLY_OPTIONS[@]}; do 
-					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${NIGHTLY_OPTIONS[i]}"
-			done
-			if [[ "$msg" ]]; then echo "$msg"; fi
-			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
-			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
-			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
-			printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64ex-nightly/build\n"
-			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
-	}
-
-	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
-	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
-			[[ "$num" != *[![:digit:]]* ]] &&
-			(( num > 0 && num <= ${#NIGHTLY_OPTIONS[@]} )) ||
-			{ msg="Invalid option: $num"; continue; }
-			((num--)); # msg="${NIGHTLY_OPTIONS[num]} was ${choices[num]:+un}checked"
-			[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
-	done
-
-	for i in ${!NIGHTLY_OPTIONS[@]}; do 
-			[[ "${choices[i]}" ]] && { CMDL+=" ${NIGHTLY_EXTRA[i]}"; }
+	for i in ${!UNOFFICIAL_OPTIONS[@]}; do 
+			[[ "${choices[i]}" ]] && { CMDL+=" ${UNOFFICIAL_EXTRA[i]}"; }
 	done
 fi
 
@@ -1277,7 +1198,7 @@ if [ "${CMDL}" != " clean" ]; then
 		fi
 		
 		# Checks binary region and shows the correct location
-		if [ "${CMDL}" = " VERSION=us" ]; then
+		if [ "${CMDL}" != " VERSION=jp" ] || [ "${CMDL}" != " VERSION=eu" ]; then
 	    	zenity --info \
 			--text="The binary is now available in the 'build/us_pc/' folder."
 			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
