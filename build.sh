@@ -180,7 +180,7 @@ Automatic updates are disabled." \
 		I_Want_Official=true
 	else
 		zenity --question  --text "Which version are you compiling?
-The nightly version is currently recommended.
+The master version is currently recommended.
 Automatic updates are disabled." \
 		--ok-label="Master" \
 		--cancel-label="Nightly"
@@ -219,7 +219,7 @@ Automatic updates are enabled." \
 		fi
 	else
 		zenity --question  --text "Which version are you compiling?
-The nightly version is currently recommended.
+The master version is currently recommended.
 Automatic updates are enabled." \
 		--ok-label="Master" \
 		--cancel-label="Nightly"
