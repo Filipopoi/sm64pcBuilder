@@ -7,27 +7,35 @@ LIBAFLA=libaudiofile.la
 AUDDIR=./tools/audiofile-0.3.6
 OFFICIAL=./sm64-port/
 OFFICIAL_GIT=./sm64-port/.git/
-OFFICIAL_OLD=./sm64-port.old/baserom.us.z64
+OFFICIAL_OLD_US=./sm64-port.old/baserom.us.z64
+OFFICIAL_OLD_JP=./sm64-port.old/baserom.jp.z64
+OFFICIAL_OLD_EU=./sm64-port.old/baserom.eu.z64
 MASTER=./sm64ex-master/
 MASTER_GIT=./sm64ex-master/.git/
-MASTER_OLD=./sm64ex-master.old/baserom.us.z64
+MASTER_OLD_US=./sm64ex-master.old/baserom.us.z64
+MASTER_OLD_JP=./sm64ex-master.old/baserom.jp.z64
+MASTER_OLD_EU=./sm64ex-master.old/baserom.eu.z64
 NIGHTLY=./sm64ex-nightly/
 NIGHTLY_GIT=./sm64ex-nightly/.git/
-NIGHTLY_OLD=./sm64ex-nightly.old/baserom.us.z64
+NIGHTLY_OLD_US=./sm64ex-nightly.old/baserom.us.z64
+NIGHTLY_OLD_JP=./sm64ex-nightly.old/baserom.jp.z64
+NIGHTLY_OLD_EU=./sm64ex-nightly.old/baserom.eu.z64
 ROM_CHECK_US=./baserom.us.z64
 ROM_CHECK_JP=./baserom.jp.z64
 ROM_CHECK_EU=./baserom.eu.z64
-BINARY=./build/us_pc/sm64*
+BINARY_US=./build/us_pc/sm64*
+BINARY_JP=./build/jp_pc/sm64*
+BINARY_EU=./build/eu_pc/sm64*
 FOLDER_PLACEMENT=C:/sm64pcBuilder
 MACHINE_TYPE=`uname -m`
 
 # Command line options
-OFFICIAL_OPTIONS=("Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "Build an N64 ROM" "Clean build | This deletes the build folder")
-OFFICIAL_EXTRA=("VERSION=jp" "VERSION=eu" "TARGET_N64=1" "clean")
-UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "Build using JP ROM | May contain glitches" "Build using EU ROM | May contain glitches" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
-UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "VERSION=jp" "VERSION=eu" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
+OFFICIAL_OPTIONS=("Build an N64 ROM" "Clean build | This deletes the build folder")
+OFFICIAL_EXTRA=("TARGET_N64=1" "clean")
+UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
+UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
 
-# Extra dependency checks
+# Dependency checks
 DEPENDENCIES=("git" "make" "python3" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2" "mingw-w64-i686-python-xdg" "mingw-w64-x86_64-python-xdg")
 
 # Colors
@@ -67,21 +75,16 @@ if [ -d "C:/Program Files/Kaspersky Lab/" ] || [ -d "C:/Program Files (x86)/Kasp
 	sleep 3
 fi
 
-# Checks for common required executables (make, git) and installs everything if they are missing
-if  [[ ! $(command -v make) || ! $(command -v git) ]]; then
-	echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
-	pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
-                    git subversion mercurial \
-                    mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
-    pacman -S mingw-w64-i686-glew mingw-w64-x86_64-glew mingw-w64-i686-SDL2 mingw-w64-x86_64-SDL2 mingw-w64-i686-python-xdg mingw-w64-x86_64-python-xdg python3 zip curl --noconfirm
-	pacman -Syuu --noconfirm
-fi
-
-# Checks for some dependencies again
+# Checks for dependencies and installs everything if they are missing
 echo -e "\n${YELLOW}Checking dependencies... ${RESET}\n"
 for i in ${DEPENDENCIES[@]}; do
 	if [[ ! $(pacman -Q $i 2> /dev/null) ]]; then
+		echo -e "\n${RED}Dependencies are missing. Proceeding with the installation... ${RESET}\n" >&2
+		pacman -Sy --needed base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain \
+	                    git subversion mercurial \
+	                    mingw-w64-i686-cmake mingw-w64-x86_64-cmake --noconfirm
 		pacman -S $i --noconfirm
+		pacman -Syuu --noconfirm
 	fi
 done
 
@@ -89,7 +92,7 @@ if [ ! -f $MINGW_HOME/bin/zenity.exe ]; then
 	wget -O $MINGW_HOME/bin/zenity.exe https://cdn.discordapp.com/attachments/718584345912148100/721406762884005968/zenity.exe
 fi
 
-echo -e "\n${GREEN}Dependencies are installed. ${RESET}\n"
+echo -e "\n${GREEN}Dependencies are already installed. ${RESET}\n"
 
 # Delete their setup or old shit
 if [ -f $HOME/build-setup.sh ]; then
@@ -123,18 +126,16 @@ SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds
 Updates:
 
 - Official Port Support
-- Fixed BLJ Anywhere by GateGuy
-- JP and EU Baserom File
-  Selection
-- EXE Location Region Detection
-  ('build/us_pc/' 'build/jp_pc/'
-   'build/eu_pc/')
 - Renamed Unofficial Repo to
   sm64ex (look for your exe in
-  this folder)
+  this folder from now on)
+- Full JP and EU Support
+- Custom Uninstall Menu
+- OwO Team's OwO Textuwe Pack
+  (Wepwaces Mawio)
 
 ------------------------------
-build.sh Update 21.1"
+build.sh Update 22"
 fi
 
 # Gives options to download from GitHub
@@ -168,9 +169,9 @@ pull_nightly () {
 
 if [ "$1" = noupdate ] || [ "$2" = noupdate ]; then
 	zenity --question  --text "Which version are you compiling?
-The official version's code is cleaner, but
+The official port's code is cleaner, but
 it lacks the new features of the unofficial
-version at the moment.
+fgsfdsfgs fork at the moment.
 Automatic updates are disabled." \
 	--ok-label="Official" \
 	--cancel-label="Unofficial"
@@ -179,6 +180,10 @@ Automatic updates are disabled." \
 	else
 		zenity --question  --text "Which version are you compiling?
 The master version is currently recommended.
+WARNING: Many patches are currently broken
+in nightly. The next script update is going
+to focus on adding a few working
+patches for nightly.
 Automatic updates are disabled." \
 		--ok-label="Master" \
 		--cancel-label="Nightly"
@@ -190,9 +195,9 @@ Automatic updates are disabled." \
 	fi
 else
 	zenity --question  --text "Which version are you compiling?
-The official version's code is cleaner, but
+The official port's code is cleaner, but
 it lacks the new features of the unofficial
-version at the moment.
+fgsfdsfgs fork at the moment.
 Automatic updates are enabled." \
 	--ok-label="Official" \
 	--cancel-label="Unofficial"
@@ -218,6 +223,10 @@ Automatic updates are enabled." \
 	else
 		zenity --question  --text "Which version are you compiling?
 The master version is currently recommended.
+WARNING: Many patches are currently broken
+in nightly. The next script update is going
+to focus on adding a few working
+patches for nightly.
 Automatic updates are enabled." \
 		--ok-label="Master" \
 		--cancel-label="Nightly"
@@ -269,96 +278,123 @@ Automatic updates are enabled." \
 	fi
 fi
 
-# Checks for a pre-existing baserom file in old folder then moves it to the new one
-if [ -f "$OFFICIAL_OLD" ]; then
-    mv sm64-port.old/baserom.us.z64 sm64-port/baserom.us.z64
-fi
-
-if [ -f "$MASTER_OLD" ]; then
-    mv sm64ex-master.old/baserom.us.z64 sm64ex-master/baserom.us.z64
-fi
-
-if [ -f "$NIGHTLY_OLD" ]; then
-    mv sm64ex-nightly.old/baserom.us.z64 sm64ex-nightly/baserom.us.z64
-fi
-
-# Checks for which version the user selected & if baserom exists
+# Checks for which version the user selected
 if [ "$I_Want_Official" = true ]; then
-    cd ./sm64-port
-    if [ -f "$ROM_CHECK_US" ] || [ -f "$ROM_CHECK_JP" ]; then
-    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-    elif [ -f "$ROM_CHECK_EU" ]; then
-    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-    else
-    	echo -e "\n${YELLOW}Select your baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)${RESET}\n"
-    	while true; do
-    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)")
+	cd ./sm64-port
+elif [ "$I_Want_Master" = true ]; then
+	cd ./sm64ex-master
+elif [ "$I_Want_Nightly" = true ]; then
+	cd ./sm64ex-nightly
+fi
+
+# Region selection
+zenity --question  --text "Which region do you want to compile in?
+The American version is the most stable
+currently, but doesn't support Japanese,
+French, or German.
+The European version is currently
+incompatible with Discord RPC." \
+--ok-label="United States" \
+--cancel-label="Japan/Europe"
+# Checks if baserom exists and lets the user select it if it's missing
+if [[ $? = 0 ]]; then
+	if [ -f "$ROM_CHECK_US" ]; then
+		echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+	else
+		echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
+		while true; do
+		BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.us.z64 file")
 		if [[ "$BASEROM_FILE" = *baserom.us.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.us.z64
-		elif [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.jp.z64
-		elif [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64-port/baserom.eu.z64
+			cp "$BASEROM_FILE" "$ROM_CHECK_US"
 		else
 			zenity --warning \
-			--text="This is not an appropriate baserom file. Make sure it's named baserom.<VERSION>.z64, where VERSION can either be us, jp, or eu. Renaming n64 or v64 to z64 won't work."
+			--text="This is not a valid baserom file/not the right region. Make sure it's named baserom.us.z64. Renaming n64 or v64 to z64 won't work."
 			continue
 		fi
 		break
 		done
+	fi
+	I_Want_US=true
+else
+	zenity --question  --text "Do you want the Japanese or European
+version? The Japanese version is in
+Japanese, while the European version
+includes English, French, and German.
+The European version is currently
+incompatible with Discord RPC." \
+	--ok-label="Japan" \
+	--cancel-label="Europe"
+	if [[ $? = 0 ]]; then
+		if [ -f "$ROM_CHECK_JP" ]; then
+			echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+		else
+			echo -e "\n${YELLOW}Select your baserom.jp.z64 file${RESET}\n"
+			while true; do
+			BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.jp.z64 file")
+			if [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
+				cp "$BASEROM_FILE" "$ROM_CHECK_JP"
+			else
+				zenity --warning \
+				--text="This is not a valid baserom file/not the right region. Make sure it's named baserom.jp.z64. Renaming n64 or v64 to z64 won't work."
+				continue
+			fi
+			break
+			done
+		fi
+		I_Want_JP=true
+	elif [ -f "$ROM_CHECK_EU" ]; then
+		echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+	
+		# Disable Discord RPC for EU until it gets fixed
+		UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
+		UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
+		
+		I_Want_EU=true
+	else
+		echo -e "\n${YELLOW}Select your baserom.eu.z64 file${RESET}\n"
+		while true; do
+		BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.eu.z64 file")
+		if [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
+			cp "$BASEROM_FILE" "$ROM_CHECK_EU"
+		else
+			zenity --warning \
+			--text="This is not a valid baserom file/not the right region. Make sure it's named baserom.eu.z64. Renaming n64 or v64 to z64 won't work."
+			continue
+		fi
+		break
+		done
+
+		# Disable Discord RPC for EU until it gets fixed
+		UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
+		UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
+		
+		I_Want_EU=true
 	fi
 fi
 
-if [ "$I_Want_Master" = true ]; then
-    cd ./sm64ex-master
-    if [ -f "$ROM_CHECK_US" ] || [ -f "$ROM_CHECK_JP" ]; then
-    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-    elif [ -f "$ROM_CHECK_EU" ]; then
-    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-    else
-    	echo -e "\n${YELLOW}Select your baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)${RESET}\n"
-    	while true; do
-    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)")
-		if [[ "$BASEROM_FILE" = *baserom.us.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-master/baserom.us.z64
-		elif [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-master/baserom.jp.z64
-		elif [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-master/baserom.eu.z64
-		else
-			zenity --warning \
-			--text="This is not an appropriate baserom file. Make sure it's named baserom.<VERSION>.z64, where VERSION can either be us, jp, or eu. Renaming n64 or v64 to z64 won't work."
-			continue
-		fi
-		break
-		done
-	fi
+# Checks for a pre-existing baserom file in old folder then moves it to the new one
+if [ -f "$OFFICIAL_OLD_US" ]; then
+	mv sm64-port.old/baserom.us.z64 sm64-port/baserom.us.z64
+elif [ -f "$OFFICIAL_OLD_JP" ]; then
+	mv sm64-port.old/baserom.jp.z64 sm64-port/baserom.jp.z64
+elif [ -f "$OFFICIAL_OLD_EU" ]; then
+    mv sm64-port.old/baserom.eu.z64 sm64-port/baserom.eu.z64
 fi
 
-if [ "$I_Want_Nightly" = true ]; then
-    cd ./sm64ex-nightly
-    if [ -f "$ROM_CHECK_US" ] || [ -f "$ROM_CHECK_JP" ]; then
-    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-    elif [ -f "$ROM_CHECK_EU" ]; then
-    	echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-    else
-    	echo -e "\n${YELLOW}Select your baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)${RESET}\n"
-    	while true; do
-    	BASEROM_FILE=$(zenity --file-selection --title="Select the baserom.<VERSION>.z64 file (VERSION = us, jp, or eu)")
-		if [[ "$BASEROM_FILE" = *baserom.us.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-nightly/baserom.us.z64
-		elif [[ "$BASEROM_FILE" = *baserom.jp.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-nightly/baserom.jp.z64
-		elif [[ "$BASEROM_FILE" = *baserom.eu.z64 ]]; then
-			cp "$BASEROM_FILE" c:/sm64pcBuilder/sm64ex-nightly/baserom.eu.z64
-		else
-			zenity --warning \
-			--text="This is not an appropriate baserom file. Make sure it's named baserom.<VERSION>.z64, where VERSION can either be us, jp, or eu. Renaming n64 or v64 to z64 won't work."
-			continue
-		fi
-		break
-		done
-	fi
+if [ -f "$MASTER_OLD_US" ]; then
+	mv sm64ex-master.old/baserom.us.z64 sm64ex-master/baserom.us.z64
+elif [ -f "$MASTER_OLD_JP" ]; then
+	mv sm64ex-master.old/baserom.jp.z64 sm64ex-master/baserom.jp.z64
+elif [ -f "$MASTER_OLD_EU" ]; then
+	mv sm64ex-master.old/baserom.eu.z64 sm64ex-master/baserom.eu.z64
+fi
+
+if [ -f "$NIGHTLY_OLD_US" ]; then
+	mv sm64ex-nightly.old/baserom.us.z64 sm64ex-nightly/baserom.us.z64
+elif [ -f "$NIGHTLY_OLD_JP" ]; then
+	mv sm64ex-nightly.old/baserom.jp.z64 sm64ex-nightly/baserom.jp.z64
+elif [ -f "$NIGHTLY_OLD_EU" ]; then
+	mv sm64ex-nightly.old/baserom.eu.z64 sm64ex-nightly/baserom.eu.z64
 fi
 
 # Swaps noupdate out of the $1 position
@@ -383,7 +419,7 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a letter to select:
 
 C)ontinue
-U)ninstall Patches
+U)ninstall
 M)odels
 V)arious
 E)nhancements
@@ -392,8 +428,9 @@ T)exture Packs
 F)ixes
 I)nstall Custom
 
-${GREEN}Press C without making a selection to
-continue with no patches.${RESET}
+${GREEN}Press C without making a
+selection to continue with no
+patches.${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
 
     read -n1 -s
@@ -502,13 +539,12 @@ ${CYAN}Models Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$m_selection1) HD Mario by ${YELLOW}Arredondo | ${RED}Nightly Only, Needs External Resources${CYAN}
-2$m_selection2) HD Mario (Old School Style) by ${YELLOW}Xinus${CYAN}, ported by ${YELLOW}TzKet-Death
+1$m_selection1) HD Mario by ${YELLOW}Arredondo
+${CYAN}2$m_selection2) HD Mario (Old School Style) by ${YELLOW}Xinus${CYAN}, ported by ${YELLOW}TzKet-Death
 ${CYAN}3$m_selection3) HD Bowser by ${YELLOW}Arredondo
 ${CYAN}4$m_selection4) 3D Coin Patch v2 by ${YELLOW}grego2d ${CYAN}and ${YELLOW}TzKet-Death
-${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie ${CYAN}| ${RED}Nightly Only,
-   Needs External Resources${CYAN}
-C)ontinue
+${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie
+${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -605,9 +641,8 @@ ${CYAN}Sound Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${CYAN}| ${RED}Nightly Only, Needs
-   External Resources${CYAN}
-C)ontinue
+1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat
+${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -642,9 +677,11 @@ ${CYAN}Texture Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64 | ${RED}Nightly Only, Needs External Resources${RESET}
-${CYAN}2$t_selection2) ${YELLOW}Mollymutt${CYAN}'s Texture Pack | ${RED}Nightly Only, Needs External Resources
-${CYAN}C)ontinue${RESET}
+1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64
+2$t_selection2) ${YELLOW}Mollymutt${CYAN}'s Texture Pack
+3$t_selection3) ${YELLOW}K1wOwO_K1tt3h${CYAN}'s, ${YELLOW}cOwOltowonwawaewewXD${CYAN}'s, and the Whowe OwO Team's OwO
+   (Wepwaces Mawio)
+C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -671,6 +708,26 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           fi
           sleep 2
             ;;
+	"3")  wget https://cdn.discordapp.com/attachments/719182301396860988/724447689907109939/owo-wip-1.2.3-1.zip
+          cd ./actors/mario
+          wget https://cdn.discordapp.com/attachments/722985251512516618/724428744185348116/mario.rar
+          if [ ! -f ../../owo-wip-1.2.3-1.zip ] || [ ! -f mario.rar ]; then
+          	echo -e "${RED}Your download fucked up"
+          else
+          	unrar x -o+ mario.rar
+          	rm mario.rar
+          	cd ../../
+			if grep -q '#include "mario/geo_header.h"' "./actors/group0.h"; then
+			    echo -e "\n${RED}The fiwe is awweady modified cowwectwy.${RESET}\n"
+			else
+			    sed -i '/#endif/i \
+#include "mario/geo_header.h"' ./actors/group0.h
+			fi
+          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwO (Wepwaces\nMawio) Selected${RESET}\n"
+		t_selection3="+"
+          fi
+          sleep 2
+            ;;   
     "c")  break
             ;;
     "C")  echo "use lower case c!!"
@@ -691,8 +748,8 @@ ${CYAN}Various Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$v_selection1) 120 Star Save | ${RED}Nightly Only${RESET}
-${CYAN}2$v_selection2) Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
+1$v_selection1) 120 Star Save
+2$v_selection2) Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
 ${CYAN}3$v_selection3) BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched cheats)
 ${CYAN}C)ontinue
 
@@ -702,6 +759,12 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     read -n1 -s
     case "$REPLY" in
     "1")  wget https://cdn.discordapp.com/attachments/710283360794181633/718232280224628796/sm64_save_file.bin
+		  if [ -f $APPDATA/sm64ex/sm64_save_file.bin ]; then
+		  	mv -f $APPDATA/sm64ex/sm64_save_file.bin $APPDATA/sm64ex/sm64_save_file.old.bin
+		  	mv sm64_save_file.bin $APPDATA/sm64ex/sm64_save_file.bin
+		  else
+		  	mv sm64_save_file.bin $APPDATA/sm64ex/sm64_save_file.bin
+		  fi
 		  if [ -f $APPDATA/sm64pc/sm64_save_file.bin ]; then
 		  	mv -f $APPDATA/sm64pc/sm64_save_file.bin $APPDATA/sm64pc/sm64_save_file.old.bin
 		  	mv sm64_save_file.bin $APPDATA/sm64pc/sm64_save_file.bin
@@ -833,8 +896,8 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1) Install Patches                    
-2) Install Texture Packs | ${RED}Nightly Only, Needs External Resources
-${CYAN}C)ontinue${RESET}
+2) Install Texture Packs
+C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -844,14 +907,23 @@ ${RESET}${YELLOW}------------------------------${RESET}"
     "1")  echo -e "\n${YELLOW}Select a patch to install${RESET}\n"
     	  PATCH_FILE=$(zenity --file-selection --title="Select the patch file")
     	  git apply $PATCH_FILE --ignore-whitespace --reject
-    	  echo -e "\n${GREEN}$PATCH_FILE selected${RESET}\n"
+    	  echo ""
+    	  echo "${GREEN}$PATCH_FILE selected${RESET}"
           sleep 2
             ;;
     "2")  echo -e "\n${YELLOW}Select a texture pack to install${RESET}\n"
-    	  TEXTURE_PACK=$(zenity --file-selection --title="Select the texure pack zip file")
-  		  mkdir -p build/us_pc/res
-  		  cp $TEXTURE_PACK ./build/us_pc/res
-  		  echo -e "\n${GREEN}$TEXTURE_PACK selected${RESET}\n"
+    	  TEXTURE_PACK=$(zenity --file-selection --title="Select the texture pack zip file")
+		  if [ "$I_Want_US" = true ]; then
+				mkdir -p build/us_pc/res
+				cp $TEXTURE_PACK ./build/us_pc/res
+		  elif [ "$I_Want_JP" = true ]; then
+				mkdir -p build/jp_pc/res
+				cp $TEXTURE_PACK ./build/jp_pc/res
+		  elif [ "$I_Want_EU" = true ]; then
+				mkdir -p build/eu_pc/res
+				cp $TEXTURE_PACK ./build/eu_pc/res
+		  fi
+  		  echo "${GREEN}$TEXTURE_PACK selected${RESET}"
 		  sleep 2
             ;;
     "c")  break
@@ -870,11 +942,12 @@ do
     clear
 	echo \
 "${YELLOW}==============================${RESET}
-${CYAN}Uninstall Patch Menu${RESET}
+${CYAN}Uninstall Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a letter to select:
 
 C)ontinue
+cU)stom
 M)odels
 V)arious
 E)nhancements
@@ -885,6 +958,56 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 
 	read -n1 -s
     case "$REPLY" in
+    "u")  while :
+do
+    clear
+	echo \
+"${YELLOW}==============================${RESET}
+${CYAN}Custom Uninstall Menu${RESET}
+${YELLOW}------------------------------${RESET}
+${CYAN}Press a number to select:
+
+1) Uninstall Patches                    
+2) Uninstall Texture Packs
+C)ontinue${RESET}
+
+${GREEN}Press C to continue${RESET}
+${RESET}${YELLOW}------------------------------${RESET}"
+
+    read -n1 -s
+    case "$REPLY" in
+    "1")  echo -e "\n${YELLOW}Select a patch to uninstall${RESET}\n"
+    	  PATCH_FILE=$(zenity --file-selection --title="Select the patch file")
+    	  git apply -R $PATCH_FILE --ignore-whitespace --reject
+    	  echo ""
+    	  echo "${GREEN}$PATCH_FILE removed${RESET}"
+          sleep 2
+            ;;
+    "2")  if [ "$I_Want_US" = true ]; then
+				echo -e "\n${YELLOW}Select a texture pack to uninstall. They are found in build/us_pc/res${RESET}\n"
+				TEXTURE_PACK=$(zenity --file-selection --title="Select the texture pack zip file found in build/us_pc/res")
+		  elif [ "$I_Want_JP" = true ]; then
+				echo -e "\n${YELLOW}Select a texture pack to uninstall. They are found in build/jp_pc/res${RESET}\n"
+				TEXTURE_PACK=$(zenity --file-selection --title="Select the texture pack zip file found in build/jp_pc/res")
+		  elif [ "$I_Want_EU" = true ]; then
+				echo -e "\n${YELLOW}Select a texture pack to uninstall. They are found in build/eu_pc/res${RESET}\n"
+				TEXTURE_PACK=$(zenity --file-selection --title="Select the texture pack zip file found in build/eu_pc/res")
+		  fi
+  		  rm $TEXTURE_PACK
+  		  echo "${GREEN}$TEXTURE_PACK removed${RESET}"
+		  sleep 2
+            ;;
+    "c")  break
+            ;;
+    "C")  echo "use lower case c!!"
+          sleep 2
+            ;;
+     * )  echo "invalid option"
+          sleep 2
+            ;;
+    esac
+done
+			;;
     "m")  while :
 do
     clear
@@ -1138,7 +1261,11 @@ if [ "$I_Want_Master" = true ] || [ "$I_Want_Nightly" = true ]; then
 			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
 			printf "${RED}WARNING: Backup your save file before selecting \"Clean build\".\n"
 			printf "${CYAN}Press the corresponding number and press enter to select it.\nWhen all desired options are selected, press Enter to continue.\n"
-			printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64ex-master/build\n"
+			if [ "$I_Want_Master" = true ]; then
+				printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64ex-master/build\n"
+			elif [ "$I_Want_Nightly" = true ]; then
+				printf "${RED}RUN \"Clean build\" REGULARLY. Every time you want to update to a newer version or\nbuild with different options you have to choose the option \"Clean build\" or\nmanually remove or rename sm64ex-nightly/build\n"
+			fi
 			printf "${YELLOW}Check Remove Extended Options Menu & leave other options unchecked for a Vanilla\nbuild.\n${RESET}"
 	}
 
@@ -1157,20 +1284,18 @@ if [ "$I_Want_Master" = true ] || [ "$I_Want_Nightly" = true ]; then
 fi
 
 # Checks the computer architecture
-if [ "${CMDL}" != " clean" ]; then
+if [ "${CMDL}" != " clean" ] && [ "$I_Want_US" = true ]; then
 	echo -e "\n${YELLOW} Executing: ${CYAN}make${CMDL} $1${RESET}\n\n"
-
 	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-	  PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
+		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL $1
 	else
-	  PATH=/mingw32/bin:$PATH make $CMDL $1
+		PATH=/mingw32/bin:$PATH make $CMDL $1
 	fi
-
-	if ls $BINARY 1> /dev/null 2>&1; then
+	if ls $BINARY_US 1> /dev/null 2>&1; then
 		if [ -f ReShade_Setup_4.6.1.exe ]; then
 			mv ./ReShade_Setup_4.6.1.exe ./build/us_pc/ReShade_Setup_4.6.1.exe
 		fi
-		
+
 		# Move sound packs
 		if [ -d ./build/us_pc/res ]; then
 			if [ -f sunshinesounds.zip ]; then
@@ -1178,7 +1303,7 @@ if [ "${CMDL}" != " clean" ]; then
 				rm sunshinesounds* # in case they exist from running the script before or selecting multiple times.
 			fi
 		fi
-				
+
 		# Move texture packs
 		if [ -d ./build/us_pc/res ]; then
 			if [ -f Hypatia_Mario_Craft_Complete.part3.rar ]; then
@@ -1195,25 +1320,122 @@ if [ "${CMDL}" != " clean" ]; then
 			if [ -f mollymutt.zip ]; then
 				mv mollymutt.zip ./build/us_pc/res
 			fi
+			if [ -f owo-wip-1.2.3-1.zip ]; then
+				mv owo-wip-1.2.3-1.zip ./build/us_pc/res
+			fi
 		fi
-		
-		# Checks binary region and shows the correct location
-		if [ "${CMDL}" != " VERSION=jp" ] || [ "${CMDL}" != " VERSION=eu" ]; then
-	    	zenity --info \
-			--text="The binary is now available in the 'build/us_pc/' folder."
-			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
-			cd ./build/us_pc/
-		elif [ "${CMDL}" = " VERSION=jp" ]; then
-	    	zenity --info \
-			--text="The binary is now available in the 'build/jp_pc/' folder."
-			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
-			cd ./build/jp_pc/
-		elif [ "${CMDL}" = " VERSION=eu" ]; then
-	    	zenity --info \
-			--text="The binary is now available in the 'build/eu_pc/' folder."
-			echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
-			cd ./build/eu_pc/
+
+		# Shows the correct binary location
+    	zenity --info \
+		--text="The binary is now available in the 'build/us_pc/' folder."
+		echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+		cd ./build/us_pc/
+		start .
+	else
+		zenity --warning \
+		--text="Oh no! Something went wrong."
+	fi
+
+# Checks the computer architecture
+elif [ "${CMDL}" != " clean" ] && [ "$I_Want_JP" = true ]; then
+	echo -e "\n${YELLOW} Executing: ${CYAN}make${CMDL} VERSION=jp $1${RESET}\n\n"
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL VERSION=jp $1
+	else
+		PATH=/mingw32/bin:$PATH make $CMDL VERSION=jp $1
+	fi
+	if ls $BINARY_JP 1> /dev/null 2>&1; then
+		if [ -f ReShade_Setup_4.6.1.exe ]; then
+			mv ./ReShade_Setup_4.6.1.exe ./build/jp_pc/ReShade_Setup_4.6.1.exe
 		fi
+
+		# Move sound packs
+		if [ -d ./build/jp_pc/res ]; then
+			if [ -f sunshinesounds.zip ]; then
+				mv sunshinesounds.zip ./build/jp_pc/res
+				rm sunshinesounds* # in case they exist from running the script before or selecting multiple times.
+			fi
+		fi
+
+		# Move texture packs
+		if [ -d ./build/jp_pc/res ]; then
+			if [ -f Hypatia_Mario_Craft_Complete.part3.rar ]; then
+				mkdir ./build/hmcc/
+				unrar x -o+ Hypatia_Mario_Craft_Complete.part1.rar ./build/hmcc/
+				mv ./build/hmcc/res ./build/hmcc/gfx
+				cd ./build/hmcc/
+				zip -r hypatiamariocraft gfx
+				mv hypatiamariocraft.zip ../../build/jp_pc/res
+				cd ../../
+            	rm Hypatia_Mario_Craft_Complete.part*
+				rm -rf ./build/hmcc/
+			fi
+			if [ -f mollymutt.zip ]; then
+				mv mollymutt.zip ./build/jp_pc/res
+			fi
+			if [ -f owo-wip-1.2.3-1.zip ]; then
+				mv owo-wip-1.2.3-1.zip ./build/jp_pc/res
+			fi
+		fi
+
+		# Shows the correct binary location
+    	zenity --info \
+		--text="The binary is now available in the 'build/jp_pc/' folder."
+		echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+		cd ./build/jp_pc/
+		start .
+	else
+		zenity --warning \
+		--text="Oh no! Something went wrong."
+	fi
+
+# Checks the computer architecture
+elif [ "${CMDL}" != " clean" ] && [ "$I_Want_EU" = true ]; then
+	echo -e "\n${YELLOW} Executing: ${CYAN}make${CMDL} VERSION=eu $1${RESET}\n\n"
+	if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+		PATH=/mingw64/bin:/mingw32/bin:$PATH make $CMDL VERSION=eu $1
+	else
+		PATH=/mingw32/bin:$PATH make $CMDL VERSION=eu $1
+	fi
+	if ls $BINARY_EU 1> /dev/null 2>&1; then
+		if [ -f ReShade_Setup_4.6.1.exe ]; then
+			mv ./ReShade_Setup_4.6.1.exe ./build/eu_pc/ReShade_Setup_4.6.1.exe
+		fi
+
+		# Move sound packs
+		if [ -d ./build/eu_pc/res ]; then
+			if [ -f sunshinesounds.zip ]; then
+				mv sunshinesounds.zip ./build/eu_pc/res
+				rm sunshinesounds* # in case they exist from running the script before or selecting multiple times.
+			fi
+		fi
+
+		# Move texture packs
+		if [ -d ./build/eu_pc/res ]; then
+			if [ -f Hypatia_Mario_Craft_Complete.part3.rar ]; then
+				mkdir ./build/hmcc/
+				unrar x -o+ Hypatia_Mario_Craft_Complete.part1.rar ./build/hmcc/
+				mv ./build/hmcc/res ./build/hmcc/gfx
+				cd ./build/hmcc/
+				zip -r hypatiamariocraft gfx
+				mv hypatiamariocraft.zip ../../build/eu_pc/res
+				cd ../../
+            	rm Hypatia_Mario_Craft_Complete.part*
+				rm -rf ./build/hmcc/
+			fi
+			if [ -f mollymutt.zip ]; then
+				mv mollymutt.zip ./build/eu_pc/res
+			fi
+			if [ -f owo-wip-1.2.3-1.zip ]; then
+				mv owo-wip-1.2.3-1.zip ./build/eu_pc/res
+			fi
+		fi
+
+		# Shows the correct binary location
+    	zenity --info \
+		--text="The binary is now available in the 'build/eu_pc/' folder."
+		echo -e "\n${YELLOW}If fullscreen doesn't seem like the correct resolution, then right click on the\nexe, go to properties, compatibility, then click Change high DPI settings.\nCheck the 'Override high DPI scaling behavior' checkmark, leave it on\napplication, then press apply."
+		cd ./build/eu_pc/
 		start .
 	else
 		zenity --warning \
