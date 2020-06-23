@@ -432,7 +432,7 @@ ${YELLOW}-----------------------------------------------------------------------
 ${CYAN}Press a number to select:
 
 1$e_selection1) 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Now Works in Nightly
-2$e_selection2) Stay in Course by ${YELLOW}Keanine
+${CYAN}2$e_selection2) Stay in Course by ${YELLOW}Keanine
 ${CYAN}3$e_selection3) Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
    cheats)
 ${CYAN}4$e_selection4) Download Reshade - Post processing effects (Glitchy as fuck for some people,
@@ -1083,7 +1083,7 @@ ${YELLOW}-----------------------------------------------------------------------
 ${CYAN}Press a number to select:
 
 1$e_u_selection1) Uninstall 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Now Works in Nightly
-2$e_u_selection2) Uninstall Stay in Course by ${YELLOW}Keanine
+${CYAN}2$e_u_selection2) Uninstall Stay in Course by ${YELLOW}Keanine
 ${CYAN}3$e_u_selection3) Uninstall Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other
    patched cheats)
 ${CYAN}C)ontinue
