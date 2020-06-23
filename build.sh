@@ -133,9 +133,10 @@ Updates:
 - Custom Uninstall Menu
 - OwO Team's OwO Textuwe Pack
   (Wepwaces Mawio)
+- Re-enable EU Discord RPC
 
 ------------------------------
-build.sh Update 22"
+build.sh Update 22.1"
 fi
 
 # Gives options to download from GitHub
@@ -291,9 +292,7 @@ fi
 zenity --question  --text "Which region do you want to compile in?
 The American version is the most stable
 currently, but doesn't support Japanese,
-French, or German.
-The European version is currently
-incompatible with Discord RPC." \
+French, or German." \
 --ok-label="United States" \
 --cancel-label="Japan/Europe"
 # Checks if baserom exists and lets the user select it if it's missing
@@ -319,9 +318,7 @@ else
 	zenity --question  --text "Do you want the Japanese or European
 version? The Japanese version is in
 Japanese, while the European version
-includes English, French, and German.
-The European version is currently
-incompatible with Discord RPC." \
+includes English, French, and German." \
 	--ok-label="Japan" \
 	--cancel-label="Europe"
 	if [[ $? = 0 ]]; then
@@ -344,11 +341,6 @@ incompatible with Discord RPC." \
 		I_Want_JP=true
 	elif [ -f "$ROM_CHECK_EU" ]; then
 		echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
-	
-		# Disable Discord RPC for EU until it gets fixed
-		UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
-		UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
-		
 		I_Want_EU=true
 	else
 		echo -e "\n${YELLOW}Select your baserom.eu.z64 file${RESET}\n"
@@ -362,12 +354,7 @@ incompatible with Discord RPC." \
 			continue
 		fi
 		break
-		done
-
-		# Disable Discord RPC for EU until it gets fixed
-		UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
-		UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
-		
+		done		
 		I_Want_EU=true
 	fi
 fi
@@ -424,8 +411,8 @@ M)odels
 V)arious
 E)nhancements
 S)ound Packs
-T)exture Packs
-F)ixes
+T)exture Packs | ${RED}Need External Resources
+${CYAN}F)ixes
 I)nstall Custom
 
 ${GREEN}Press C without making a
@@ -539,11 +526,11 @@ ${CYAN}Models Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$m_selection1) HD Mario by ${YELLOW}Arredondo
+1$m_selection1) HD Mario by ${YELLOW}Arredondo ${CYAN}| ${RED}Needs External Resources
 ${CYAN}2$m_selection2) HD Mario (Old School Style) by ${YELLOW}Xinus${CYAN}, ported by ${YELLOW}TzKet-Death
 ${CYAN}3$m_selection3) HD Bowser by ${YELLOW}Arredondo
 ${CYAN}4$m_selection4) 3D Coin Patch v2 by ${YELLOW}grego2d ${CYAN}and ${YELLOW}TzKet-Death
-${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie
+${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie ${CYAN}| ${RED}Needs External Resources
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -641,7 +628,8 @@ ${CYAN}Sound Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat
+1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${CYAN}| ${RED}Needs External
+   Resources
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -677,11 +665,11 @@ ${CYAN}Texture Packs Menu${RESET}
 ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64
-2$t_selection2) ${YELLOW}Mollymutt${CYAN}'s Texture Pack
-3$t_selection3) ${YELLOW}K1wOwO_K1tt3h${CYAN}'s, ${YELLOW}cOwOltowonwawaewewXD${CYAN}'s, and the Whowe OwO Team's OwO
-   (Wepwaces Mawio)
-C)ontinue${RESET}
+1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64 | ${RED}Needs External Resources
+${CYAN}2$t_selection2) ${YELLOW}Mollymutt${CYAN}'s Texture Pack | ${RED}Needs External Resources
+${CYAN}3$t_selection3) ${YELLOW}K1wOwO_K1tt3h${CYAN}'s, ${YELLOW}cOwOltowonwawaewewXD${CYAN}'s, and the Whowe OwO Team's OwO
+   (Mawio Wepwacement by ${YELLOW}NapstiOwO${CYAN}) | ${RED}Needs External Resources
+${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
@@ -723,7 +711,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 			    sed -i '/#endif/i \
 #include "mario/geo_header.h"' ./actors/group0.h
 			fi
-          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwO (Wepwaces\nMawio) Selected${RESET}\n"
+          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwO (Mawio\nWepwacement by ${YELLOW}NapstiOwO${GREEN}) Sewected${RESET}\n"
 		t_selection3="+"
           fi
           sleep 2
@@ -896,8 +884,8 @@ ${YELLOW}------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1) Install Patches                    
-2) Install Texture Packs
-C)ontinue${RESET}
+2) Install Texture Packs | ${RED}Needs External Resources
+${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
 ${RESET}${YELLOW}------------------------------${RESET}"
