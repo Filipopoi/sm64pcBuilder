@@ -121,22 +121,26 @@ sed 's/\// /g') | cut -f1) ] && echo -e "\n${GREEN}build.sh is up to date\n${RES
 # Update message
 if [ "$3" = showchangelog ]; then
 	zenity --info  --text "
-SM64PC Builder (by serosis, gunvalk, derailius, Filipianosol, coltonrawr, fgsfds, BrineDude, Recompiler, and others)
-------------------------------
+SM64PC Builder
+by serosis, gunvalk, derailius, Filipianosol,
+coltonrawr, fgsfds, BrineDude, Recompiler, and others
+-----------------------------------------------------
 Updates:
 
 - Official Port Support
-- Renamed Unofficial Repo to
-  sm64ex (look for your exe in
-  this folder from now on)
+- Renamed Unofficial Repo to sm64ex (look for your
+  exe in this folder from now on)
 - Full JP and EU Support
 - Custom Uninstall Menu
-- OwO Team's OwO Textuwe Pack
-  (Wepwaces Mawio)
-- Re-enable EU Discord RPC
+- OwO Team's OwO Textuwe Pack (Wepwaces Mawio)
+- Re-enabled EU Discord RPC
+- Nightly 60 FPS Patch
+- Updated Keanine's Don't Exit From Star Patch
+  (Now Includes a Dialog Giving You the Option to
+   Stay or Go; Renamed to Stay in Course)
 
-------------------------------
-build.sh Update 22.1"
+-----------------------------------------------------
+build.sh Update 22.2"
 fi
 
 # Gives options to download from GitHub
@@ -181,10 +185,8 @@ Automatic updates are disabled." \
 	else
 		zenity --question  --text "Which version are you compiling?
 The master version is currently recommended.
-WARNING: Many patches are currently broken
-in nightly. The next script update is going
-to focus on adding a few working
-patches for nightly.
+Note: 60 FPS Patch is now compatible with
+nightly. Other patches are on the way.
 Automatic updates are disabled." \
 		--ok-label="Master" \
 		--cancel-label="Nightly"
@@ -224,10 +226,8 @@ Automatic updates are enabled." \
 	else
 		zenity --question  --text "Which version are you compiling?
 The master version is currently recommended.
-WARNING: Many patches are currently broken
-in nightly. The next script update is going
-to focus on adding a few working
-patches for nightly.
+Note: 60 FPS Patch is now compatible with
+nightly. Other patches are on the way.
 Automatic updates are enabled." \
 		--ok-label="Master" \
 		--cancel-label="Nightly"
@@ -298,7 +298,7 @@ French, or German." \
 # Checks if baserom exists and lets the user select it if it's missing
 if [[ $? = 0 ]]; then
 	if [ -f "$ROM_CHECK_US" ]; then
-		echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+		echo -e "\n\n${GREEN}Existing baserom.us.z64 found${RESET}\n"
 	else
 		echo -e "\n${YELLOW}Select your baserom.us.z64 file${RESET}\n"
 		while true; do
@@ -323,7 +323,7 @@ includes English, French, and German." \
 	--cancel-label="Europe"
 	if [[ $? = 0 ]]; then
 		if [ -f "$ROM_CHECK_JP" ]; then
-			echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+			echo -e "\n\n${GREEN}Existing baserom.jp.z64 found${RESET}\n"
 		else
 			echo -e "\n${YELLOW}Select your baserom.jp.z64 file${RESET}\n"
 			while true; do
@@ -340,7 +340,7 @@ includes English, French, and German." \
 		fi
 		I_Want_JP=true
 	elif [ -f "$ROM_CHECK_EU" ]; then
-		echo -e "\n\n${GREEN}Existing baserom found${RESET}\n"
+		echo -e "\n\n${GREEN}Existing baserom.eu.z64 found${RESET}\n"
 		I_Want_EU=true
 	else
 		echo -e "\n${YELLOW}Select your baserom.eu.z64 file${RESET}\n"
@@ -400,9 +400,9 @@ while :
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Add-ons Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a letter to select:
 
 C)ontinue
@@ -418,7 +418,7 @@ I)nstall Custom
 ${GREEN}Press C without making a
 selection to continue with no
 patches.${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -426,30 +426,29 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Enhancements Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$e_selection1) 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP)
-2$e_selection2) 60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP)
-3$e_selection3) Don't Exit From Star Patch by ${YELLOW}Keanine
-${CYAN}4$e_selection4) Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
+1$e_selection1) 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Now Works in Nightly
+2$e_selection2) Stay in Course by ${YELLOW}Keanine
+${CYAN}3$e_selection3) Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
    cheats)
-${CYAN}5$e_selection5) Download Reshade - Post processing effects (Glitchy as fuck for some people,
+${CYAN}4$e_selection4) Download Reshade - Post processing effects (Glitchy as fuck for some people,
    only use if you're experienced)
 C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
-    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
+    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]] && [ "$I_Want_Master" = true ]; then
 			git apply ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
 			e_selection1="+"
-		  else
+		  elif [ "$I_Want_Master" = true ]; then
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/707763437975109788/715783586460205086/60fps_interpolation_wip.patch
 		  	cd ../
@@ -457,53 +456,51 @@ ${RESET}${YELLOW}------------------------------${RESET}"
           	echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
 		e_selection1="+"
           fi
+          if [[ -f "./enhancements/60fps_interpolation_wip_nightly.patch" ]] && [ "$I_Want_Nightly" = true ]; then
+			git apply ./enhancements/60fps_interpolation_wip_nightly.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
+			e_selection1="+"
+		  elif [ "$I_Want_Nightly" = true ]; then
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/721806706547490868/723907484653453403/60fps_interpolation_wip_nightly.patch
+		  	cd ../
+	      	git apply ./enhancements/60fps_interpolation_wip_nightly.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
+		e_selection1="+"
+          fi
           sleep 2
             ;;
-    "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
-			git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
+    "2")  if [[ -f "./enhancements/stay_in_course.patch" ]]; then
+			git apply ./enhancements/stay_in_course.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Stay in Course by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
 			e_selection2="+"
 		  else
 		  	cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/707763437975109788/716761081355173969/60fps_interpolation_wip_nocap.patch
+		  	wget https://cdn.discordapp.com/attachments/721806706547490868/723908274461737070/stay_in_course.patch
 		  	cd ../
-		  	git apply ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-		  	echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Selected${RESET}\n"
+		  	git apply ./enhancements/stay_in_course.patch --ignore-whitespace --reject
+		  	echo -e "$\n${GREEN}Stay in Course by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
 			e_selection2="+"
 		  fi
 		  sleep 2
             ;;
-    "3")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
-			git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Don't Exit From Star Patch by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
-			e_selection3="+"
-		  else
-		  	cd ./enhancements
-		  	wget https://cdn.discordapp.com/attachments/718584345912148100/720292073798107156/DontExitFromStar.patch
-		  	cd ../
-		  	git apply ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
-		  	echo -e "$\n${GREEN}Don't Exit From Star Patch by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
-			e_selection3="+"
-		  fi
-		  sleep 2
-            ;;
-    "4")  if [[ -f "./enhancements/stay_after_star_nonstop_mode_cheat.patch" ]]; then
+    "3")  if [[ -f "./enhancements/stay_after_star_nonstop_mode_cheat.patch" ]]; then
 			git apply ./enhancements/stay_after_star_nonstop_mode_cheat.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Stay in Level After Star by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
-			e_selection4="+"
+			e_selection3="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722831880701083648/stay_after_star_nonstop_mode_cheat.patch
 		  	cd ../
 	      	git apply ./enhancements/stay_after_star_nonstop_mode_cheat.patch --ignore-whitespace --reject
           	echo -e "$\n${GREEN}Stay in Level After Star by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
-		e_selection4="+"
+		e_selection3="+"
           fi
           sleep 2
             ;;
-    "5")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
+    "4")  wget https://reshade.me/downloads/ReShade_Setup_4.6.1.exe
 		  echo -e "$\n${GREEN}Reshade Downloaded${RESET}\n"
-		  e_selection5="+"
+		  e_selection4="+"
 		  sleep 2
       		;;
     "c")  break
@@ -521,20 +518,21 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Models Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$m_selection1) HD Mario by ${YELLOW}Arredondo ${CYAN}| ${RED}Needs External Resources
 ${CYAN}2$m_selection2) HD Mario (Old School Style) by ${YELLOW}Xinus${CYAN}, ported by ${YELLOW}TzKet-Death
 ${CYAN}3$m_selection3) HD Bowser by ${YELLOW}Arredondo
 ${CYAN}4$m_selection4) 3D Coin Patch v2 by ${YELLOW}grego2d ${CYAN}and ${YELLOW}TzKet-Death
-${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie ${CYAN}| ${RED}Needs External Resources
+${CYAN}5$m_selection5) N64 Luigi (Replaces Mario) by ${YELLOW}Cjes${CYAN}, ${YELLOW}rise${CYAN}, and ${YELLOW}Weegeepie ${CYAN}| ${RED}Needs External
+   Resources
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -623,9 +621,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Sound Packs Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${CYAN}| ${RED}Needs External
@@ -633,7 +631,7 @@ ${CYAN}Press a number to select:
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -660,9 +658,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Texture Packs Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64 | ${RED}Needs External Resources
@@ -672,7 +670,7 @@ ${CYAN}3$t_selection3) ${YELLOW}K1wOwO_K1tt3h${CYAN}'s, ${YELLOW}cOwOltowonwawae
 ${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -711,7 +709,7 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 			    sed -i '/#endif/i \
 #include "mario/geo_header.h"' ./actors/group0.h
 			fi
-          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwO (Mawio\nWepwacement by ${YELLOW}NapstiOwO${GREEN}) Sewected${RESET}\n"
+          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwO\n(Mawio Wepwacement by ${YELLOW}NapstiOwO${GREEN}) Sewected${RESET}\n"
 		t_selection3="+"
           fi
           sleep 2
@@ -731,9 +729,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Various Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$v_selection1) 120 Star Save
@@ -742,7 +740,7 @@ ${CYAN}3$v_selection3) BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (co
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -806,9 +804,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Fixes Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$f_selection1) Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi
@@ -817,7 +815,7 @@ ${CYAN}3$f_selection3) Go Back to Title Screen from Ending by ${YELLOW}GateGuy
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -878,9 +876,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Custom Install Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1) Install Patches                    
@@ -888,7 +886,7 @@ ${CYAN}Press a number to select:
 ${CYAN}C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -929,9 +927,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Uninstall Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a letter to select:
 
 C)ontinue
@@ -942,7 +940,7 @@ E)nhancements
 F)ixes
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
 	read -n1 -s
     case "$REPLY" in
@@ -950,9 +948,9 @@ ${RESET}${YELLOW}------------------------------${RESET}"
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Custom Uninstall Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1) Uninstall Patches                    
@@ -960,7 +958,7 @@ ${CYAN}Press a number to select:
 C)ontinue${RESET}
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -1000,16 +998,16 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Uninstall Models Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 1$m_u_selection1) Uninstall 3D Coin Patch v2 by ${YELLOW}grego2d ${CYAN}and ${YELLOW}TzKet-Death
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -1035,9 +1033,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Uninstall Various Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 ${CYAN}1$v_u_selection1) Uninstall Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
@@ -1046,7 +1044,7 @@ ${CYAN}2$v_u_selection2) Uninstall BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${R
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
@@ -1079,49 +1077,44 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Uninstall Enhancements Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$e_u_selection1) Uninstall 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP)
-2$e_u_selection2) Uninstall 60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head,
-   WIP)
-3$e_u_selection3) Uninstall Don't Exit From Star Patch by ${YELLOW}Keanine
-${CYAN}4$e_u_selection4) Uninstall Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other
+1$e_u_selection1) Uninstall 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Now Works in Nightly
+2$e_u_selection2) Uninstall Stay in Course by ${YELLOW}Keanine
+${CYAN}3$e_u_selection3) Uninstall Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other
    patched cheats)
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
-    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]]; then
+    "1")  if [[ -f "./enhancements/60fps_interpolation_wip.patch" ]] && [ "$I_Want_Master" = true ]; then
 			git apply -R ./enhancements/60fps_interpolation_wip.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Removed${RESET}\n"
+			e_u_selection1="+"
+		  elif [[ -f "./enhancements/60fps_interpolation_wip_nightly.patch" ]] && [ "$I_Want_Nightly" = true ]; then
+			git apply -R ./enhancements/60fps_interpolation_wip_nightly.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}60 FPS Patch (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Removed${RESET}\n"
 			e_u_selection1="+"
           fi
           sleep 2
             ;;
-    "2")  if [[ -f "./enhancements/60fps_interpolation_wip_nocap.patch" ]]; then
-			git apply -R ./enhancements/60fps_interpolation_wip_nocap.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}60 FPS Patch Uncapped Framerate (Destroys ${YELLOW}Arredondo ${GREEN}HD Mario Head, WIP) Removed${RESET}\n"
+    "2")  if [[ -f "./enhancements/stay_in_course.patch" ]]; then
+			git apply -R ./enhancements/stay_in_course.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Stay in Course by ${YELLOW}Keanine ${GREEN}Removed${RESET}\n"
 			e_u_selection2="+"
 		  fi
 		  sleep 2
-            ;;
-    "3")  if [[ -f "./enhancements/DontExitFromStar.patch" ]]; then
-			git apply -R ./enhancements/DontExitFromStar.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Don't Exit From Star Patch by ${YELLOW}Keanine ${GREEN}Removed${RESET}\n"
-			e_u_selection3="+"
-		  fi
-		  sleep 2
 		    ;;
-    "4")  if [[ -f "./enhancements/stay_after_star_nonstop_mode_cheat.patch" ]]; then
+    "3")  if [[ -f "./enhancements/stay_after_star_nonstop_mode_cheat.patch" ]]; then
 			git apply -R ./enhancements/stay_after_star_nonstop_mode_cheat.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Stay in Level After Star by ${YELLOW}GateGuy ${GREEN}Removed${RESET}\n"
-			e_u_selection4="+"
+			e_u_selection3="+"
 		  fi
 		  sleep 2
 		    ;;
@@ -1140,9 +1133,9 @@ done
 do
     clear
 	echo \
-"${YELLOW}==============================${RESET}
+"${YELLOW}================================================================================${RESET}
 ${CYAN}Uninstall Fixes Menu${RESET}
-${YELLOW}------------------------------${RESET}
+${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
 ${CYAN}1$f_u_selection1) Uninstall Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi
@@ -1151,7 +1144,7 @@ ${CYAN}3$f_u_selection3) Uninstall Go Back to Title Screen from Ending by ${YELL
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
-${RESET}${YELLOW}------------------------------${RESET}"
+${RESET}${YELLOW}--------------------------------------------------------------------------------${RESET}"
 
     read -n1 -s
     case "$REPLY" in
