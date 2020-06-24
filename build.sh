@@ -32,8 +32,8 @@ MACHINE_TYPE=`uname -m`
 # Command line options
 OFFICIAL_OPTIONS=("Build an N64 ROM" "Clean build | This deletes the build folder")
 OFFICIAL_EXTRA=("TARGET_N64=1" "clean")
-UNOFFICIAL_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
-UNOFFICIAL_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
+SM64EX_OPTIONS=("Analog Camera" "No Draw Distance" "Texture Fixes" "Allow External Resources" "Discord Rich Presence" "Remove Extended Options Menu | Remove additional R button menu options" "DirectX 11 Renderer" "DirectX 12 Renderer" "OpenGL 1.3 Renderer | Unrecommended. Only use if your machine is very old" "Clean build | This deletes the build folder")
+SM64EX_EXTRA=("BETTERCAMERA=1" "NODRAWINGDISTANCE=1" "TEXTURE_FIX=1" "EXTERNAL_DATA=1" "DISCORDRPC=1" "EXT_OPTIONS_MENU=0" "RENDER_API=D3D11" "RENDER_API=D3D12" "LEGACY_GL=1" "clean")
 
 # Dependency checks
 DEPENDENCIES=("git" "make" "python3" "zip" "unzip" "curl" "unrar" "mingw-w64-i686-gcc" "mingw-w64-x86_64-gcc" "mingw-w64-i686-glew" "mingw-w64-x86_64-glew" "mingw-w64-i686-SDL2" "mingw-w64-x86_64-SDL2" "mingw-w64-i686-python-xdg" "mingw-w64-x86_64-python-xdg")
@@ -128,19 +128,20 @@ coltonrawr, fgsfds, BrineDude, Recompiler, and others
 Updates:
 
 - Official Port Support
-- Renamed Unofficial Repo to sm64ex (look for your
+- Renamed fgsfdsfgs Repo to sm64ex (look for your
   exe in this folder from now on)
 - Full JP and EU Support
 - Custom Uninstall Menu
-- OwO Team's OwO Textuwe Pack (Wepwaces Mawio)
+- OwO Team's OwOify Textuwe Pack (Wepwaces Mawio)
 - Re-enabled EU Discord RPC
 - Nightly 60 FPS Patch
 - Updated Keanine's Don't Exit From Star Patch
   (Now Includes a Dialog Giving You the Option to
    Stay or Go; Renamed to Stay in Course)
+- Exit Course 50 Coin Fix by Keanine
 
 -----------------------------------------------------
-build.sh Update 22.2"
+build.sh Update 22.3"
 fi
 
 # Gives options to download from GitHub
@@ -175,11 +176,11 @@ pull_nightly () {
 if [ "$1" = noupdate ] || [ "$2" = noupdate ]; then
 	zenity --question  --text "Which version are you compiling?
 The official port's code is cleaner, but
-it lacks the new features of the unofficial
+it lacks the new features of the sm64ex
 fgsfdsfgs fork at the moment.
 Automatic updates are disabled." \
 	--ok-label="Official" \
-	--cancel-label="Unofficial"
+	--cancel-label="sm64ex"
 	if [[ $? = 0 ]]; then
 		I_Want_Official=true
 	else
@@ -199,11 +200,11 @@ Automatic updates are disabled." \
 else
 	zenity --question  --text "Which version are you compiling?
 The official port's code is cleaner, but
-it lacks the new features of the unofficial
+it lacks the new features of the sm64ex
 fgsfdsfgs fork at the moment.
 Automatic updates are enabled." \
 	--ok-label="Official" \
-	--cancel-label="Unofficial"
+	--cancel-label="sm64ex"
 	if [[ $? = 0 ]]; then
 		if [ -d "$OFFICIAL_GIT" ]; then
 			cd ./sm64-port
@@ -431,8 +432,9 @@ ${CYAN}Enhancements Menu${RESET}
 ${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$e_selection1) 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Now Works in Nightly
-${CYAN}2$e_selection2) Stay in Course by ${YELLOW}Keanine
+1$e_selection1) 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Works in Master and
+   Nightly
+${CYAN}2$e_selection2) Stay in Course by ${YELLOW}Keanine ${CYAN}| ${RED}Currently Broken
 ${CYAN}3$e_selection3) Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
    cheats)
 ${CYAN}4$e_selection4) Download Reshade - Post processing effects (Glitchy as fuck for some people,
@@ -626,7 +628,7 @@ ${CYAN}Sound Packs Menu${RESET}
 ${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${CYAN}| ${RED}Needs External
+1$s_selection1) Super Mario Sunshine Mario Voice by ${YELLOW}Kris The Coder Goat ${CYAN}| ${RED}Needs External
    Resources
 ${CYAN}C)ontinue
 
@@ -639,7 +641,7 @@ ${RESET}${YELLOW}---------------------------------------------------------------
 		  #unrar x -o+ Sunshine_Mario_VO.rar
 		  #rm Sunshine_Mario_VO.rar
 		  wget https://cdn.discordapp.com/attachments/718584345912148100/719492399411232859/sunshinesounds.zip
-		  echo -e "$\n${GREEN}Super Mario Sunshine Mario Voice by ${YELLOW}!!!! Kris The Goat ${GREEN}Selected${RESET}\n"
+		  echo -e "$\n${GREEN}Super Mario Sunshine Mario Voice by ${YELLOW}Kris The Coder Goat ${GREEN}Selected${RESET}\n"
 		  s_selection1="+"
 		  sleep 2
             ;;
@@ -665,7 +667,7 @@ ${CYAN}Press a number to select:
 
 1$t_selection1) ${YELLOW}Hypatia${CYAN}´s Mario Craft 64 | ${RED}Needs External Resources
 ${CYAN}2$t_selection2) ${YELLOW}Mollymutt${CYAN}'s Texture Pack | ${RED}Needs External Resources
-${CYAN}3$t_selection3) ${YELLOW}K1wOwO_K1tt3h${CYAN}'s, ${YELLOW}cOwOltowonwawaewewXD${CYAN}'s, and the Whowe OwO Team's OwO
+${CYAN}3$t_selection3) ${YELLOW}K1wOwO_K1tt3h${CYAN}'s, ${YELLOW}cOwOltowonwawaewewXD${CYAN}'s, and the Whowe OwO Team's OwOify
    (Mawio Wepwacement by ${YELLOW}NapstiOwO${CYAN}) | ${RED}Needs External Resources
 ${CYAN}C)ontinue${RESET}
 
@@ -709,7 +711,7 @@ ${RESET}${YELLOW}---------------------------------------------------------------
 			    sed -i '/#endif/i \
 #include "mario/geo_header.h"' ./actors/group0.h
 			fi
-          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwO\n(Mawio Wepwacement by ${YELLOW}NapstiOwO${GREEN}) Sewected${RESET}\n"
+          	echo -e "$\n${YELLOW}K1wOwO_K1tt3h${GREEN}'s, ${YELLOW}cOwOltowonwawaewewXD${GREEN}'s, and the Whowe OwO Team's OwOify\n(Mawio Wepwacement by ${YELLOW}NapstiOwO${GREEN}) Sewected${RESET}\n"
 		t_selection3="+"
           fi
           sleep 2
@@ -735,7 +737,7 @@ ${YELLOW}-----------------------------------------------------------------------
 ${CYAN}Press a number to select:
 
 1$v_selection1) 120 Star Save
-2$v_selection2) Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
+2$v_selection2) Enable Debug Level Selector (WIP) by ${YELLOW}Dummy unu boi
 ${CYAN}3$v_selection3) BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched cheats)
 ${CYAN}C)ontinue
 
@@ -763,14 +765,14 @@ ${RESET}${YELLOW}---------------------------------------------------------------
             ;;
     "2")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
 			git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Dummy unu boi ${GREEN}Selected${RESET}\n"
 			v_selection2="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722566901749907496/0001-WIP-Enable-debug-level-selector.patch
 		  	cd ../
 	      	git apply ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+          	echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Dummy unu boi ${GREEN}Selected${RESET}\n"
 		v_selection2="+"
           fi
           sleep 2
@@ -809,9 +811,10 @@ ${CYAN}Fixes Menu${RESET}
 ${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$f_selection1) Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi
+1$f_selection1) Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Dummy unu boi
 ${CYAN}2$f_selection2) Increase Delay on Star Select by ${YELLOW}GateGuy ${CYAN}| ${RED}Breaks TAS Support
 ${CYAN}3$f_selection3) Go Back to Title Screen from Ending by ${YELLOW}GateGuy
+${CYAN}4$f_selection4) Exit Course 50 Coin Fix by ${YELLOW}Keanine ${CYAN}| ${GREEN}Works in Master and Nightly
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -821,14 +824,14 @@ ${RESET}${YELLOW}---------------------------------------------------------------
     case "$REPLY" in
     "1")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
 			git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Dummy unu boi ${GREEN}Selected${RESET}\n"
 			f_selection1="+"
 		  else
 			cd ./enhancements
 		  	wget https://cdn.discordapp.com/attachments/716459185230970880/722662190267760660/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch
 		  	cd ../
 	      	git apply ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
-          	echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi ${GREEN}Selected${RESET}\n"
+          	echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Dummy unu boi ${GREEN}Selected${RESET}\n"
 		f_selection1="+"
           fi
           sleep 2
@@ -858,6 +861,20 @@ ${RESET}${YELLOW}---------------------------------------------------------------
 	      	git apply ./enhancements/go_back_to_title_from_ending.patch --ignore-whitespace --reject
           	echo -e "$\n${GREEN}Go Back to Title Screen from Ending by ${YELLOW}GateGuy ${GREEN}Selected${RESET}\n"
 		f_selection3="+"
+          fi
+          sleep 2
+            ;;
+    "4")  if [[ -f "./enhancements/exit_course_50_coin_fix.patch" ]]; then
+			git apply ./enhancements/exit_course_50_coin_fix.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Exit Course 50 Coin Fix by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
+			f_selection4="+"
+		  else
+			cd ./enhancements
+		  	wget https://cdn.discordapp.com/attachments/721818545087840257/725094603258200105/exit_course_50_coin_fix.patch
+		  	cd ../
+	      	git apply ./enhancements/exit_course_50_coin_fix.patch --ignore-whitespace --reject
+          	echo -e "$\n${GREEN}Exit Course 50 Coin Fix by ${YELLOW}Keanine ${GREEN}Selected${RESET}\n"
+		f_selection4="+"
           fi
           sleep 2
             ;;
@@ -1038,7 +1055,7 @@ ${CYAN}Uninstall Various Menu${RESET}
 ${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-${CYAN}1$v_u_selection1) Uninstall Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi
+${CYAN}1$v_u_selection1) Uninstall Enable Debug Level Selector (WIP) by ${YELLOW}Dummy unu boi
 ${CYAN}2$v_u_selection2) Uninstall BLJ Anywhere by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other patched
    cheats)
 ${CYAN}C)ontinue
@@ -1050,7 +1067,7 @@ ${RESET}${YELLOW}---------------------------------------------------------------
     case "$REPLY" in
     "1")  if [[ -f "./enhancements/0001-WIP-Enable-debug-level-selector.patch" ]]; then
 			git apply -R ./enhancements/0001-WIP-Enable-debug-level-selector.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Funny unu boi ${GREEN}Removed${RESET}\n"
+			echo -e "$\n${GREEN}Enable Debug Level Selector (WIP) by ${YELLOW}Dummy unu boi ${GREEN}Removed${RESET}\n"
 			v_u_selection1="+"
 		  fi
 		  sleep 2
@@ -1082,8 +1099,9 @@ ${CYAN}Uninstall Enhancements Menu${RESET}
 ${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-1$e_u_selection1) Uninstall 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Now Works in Nightly
-${CYAN}2$e_u_selection2) Uninstall Stay in Course by ${YELLOW}Keanine
+1$e_u_selection1) Uninstall 60 FPS Patch (Destroys ${YELLOW}Arredondo ${CYAN}HD Mario Head, WIP) | ${GREEN}Works in
+   Master and Nightly
+${CYAN}2$e_u_selection2) Uninstall Stay in Course by ${YELLOW}Keanine ${CYAN}| ${RED}Currently Broken
 ${CYAN}3$e_u_selection3) Uninstall Stay in Level After Star by ${YELLOW}GateGuy ${CYAN}| ${RED}Cheat (conflicts with other
    patched cheats)
 ${CYAN}C)ontinue
@@ -1138,9 +1156,10 @@ ${CYAN}Uninstall Fixes Menu${RESET}
 ${YELLOW}--------------------------------------------------------------------------------${RESET}
 ${CYAN}Press a number to select:
 
-${CYAN}1$f_u_selection1) Uninstall Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi
+${CYAN}1$f_u_selection1) Uninstall Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Dummy unu boi
 ${CYAN}2$f_u_selection2) Uninstall Increase Delay on Star Select by ${YELLOW}GateGuy ${CYAN}| ${RED}Breaks TAS Support
 ${CYAN}3$f_u_selection3) Uninstall Go Back to Title Screen from Ending by ${YELLOW}GateGuy
+${CYAN}4$f_u_selection4) Uninstall Exit Course 50 Coin Fix by ${YELLOW}Keanine ${CYAN}| ${GREEN}Works in Master and Nightly
 ${CYAN}C)ontinue
 
 ${GREEN}Press C to continue${RESET}
@@ -1150,7 +1169,7 @@ ${RESET}${YELLOW}---------------------------------------------------------------
     case "$REPLY" in
     "1")  if [[ -f "./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch" ]]; then
 			git apply -R ./enhancements/0001-WIP-Added-mouse-support-and-some-fixes-for-reshade.patch --ignore-whitespace --reject
-			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Funny unu boi ${GREEN}Removed${RESET}\n"
+			echo -e "$\n${GREEN}Mouse Support and Fixes for Reshade (WIP) by ${YELLOW}Dummy unu boi ${GREEN}Removed${RESET}\n"
 			f_u_selection1="+"
 		  fi
 		  sleep 2
@@ -1166,6 +1185,13 @@ ${RESET}${YELLOW}---------------------------------------------------------------
 			git apply -R ./enhancements/go_back_to_title_from_ending.patch --ignore-whitespace --reject
 			echo -e "$\n${GREEN}Go Back to Title Screen from Ending by ${YELLOW}GateGuy ${GREEN}Removed${RESET}\n"
 			f_u_selection3="+"
+		  fi
+		  sleep 2
+		    ;;
+    "4")  if [[ -f "./enhancements/exit_course_50_coin_fix.patch" ]]; then
+			git apply -R ./enhancements/exit_course_50_coin_fix.patch --ignore-whitespace --reject
+			echo -e "$\n${GREEN}Exit Course 50 Coin Fix by ${YELLOW}Keanine ${GREEN}Removed${RESET}\n"
+			f_u_selection4="+"
 		  fi
 		  sleep 2
 		    ;;
@@ -1231,12 +1257,12 @@ if [ "$I_Want_Official" = true ]; then
 	done
 fi
 
-# Unofficial flags menu
+# sm64ex flags menu
 if [ "$I_Want_Master" = true ] || [ "$I_Want_Nightly" = true ]; then
 	menu() {
 			printf "\nAvailable options:\n"
-			for i in ${!UNOFFICIAL_OPTIONS[@]}; do 
-					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${UNOFFICIAL_OPTIONS[i]}"
+			for i in ${!SM64EX_OPTIONS[@]}; do 
+					printf "%3d%s) %s\n" $((i+1)) "${choices[i]:- }" "${SM64EX_OPTIONS[i]}"
 			done
 			if [[ "$msg" ]]; then echo "$msg"; fi
 			printf "${YELLOW}Please do not select \"Clean build\" with any other option.\n"
@@ -1253,14 +1279,14 @@ if [ "$I_Want_Master" = true ] || [ "$I_Want_Nightly" = true ]; then
 	prompt="Check an option (again to uncheck, press ENTER):"$'\n'
 	while menu && read -rp "$prompt" num && [[ "$num" ]]; do
 			[[ "$num" != *[![:digit:]]* ]] &&
-			(( num > 0 && num <= ${#UNOFFICIAL_OPTIONS[@]} )) ||
+			(( num > 0 && num <= ${#SM64EX_OPTIONS[@]} )) ||
 			{ msg="Invalid option: $num"; continue; }
-			((num--)); # msg="${UNOFFICIAL_OPTIONS[num]} was ${choices[num]:+un}checked"
+			((num--)); # msg="${SM64EX_OPTIONS[num]} was ${choices[num]:+un}checked"
 			[[ "${choices[num]}" ]] && choices[num]="" || choices[num]="+"
 	done
 
-	for i in ${!UNOFFICIAL_OPTIONS[@]}; do 
-			[[ "${choices[i]}" ]] && { CMDL+=" ${UNOFFICIAL_EXTRA[i]}"; }
+	for i in ${!SM64EX_OPTIONS[@]}; do 
+			[[ "${choices[i]}" ]] && { CMDL+=" ${SM64EX_EXTRA[i]}"; }
 	done
 fi
 
